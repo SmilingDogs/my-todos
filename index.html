@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Preload CSS -->
+    <link rel="preload" href="/src/style.css" as="style" />
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="/src/style.css" />
+    <title>My todos</title>
+  </head>
+  <body>
+    <h1></h1>
+    <div id="popup">
+      <h4 class="notification-title">New Notification</h4>
+      <p class="notification-text"></p>
+      <p class="notification-by">sent by: My todos</p>
+    </div>
+    <div id="todo">
+      <div class="input-container">
+        <div class="add-container">
+          <ion-icon name="add-circle-outline" class="add-icon"></ion-icon>
+          <input
+            id="add-item"
+            type="text"
+            name="text"
+            placeholder="Add an item..."
+          />
+        </div>
+        <div class="search-container">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <input
+            id="search-item"
+            type="text"
+            name="search"
+            placeholder="Search an item..."
+          />
+        </div>
+      </div>
+      <ul id="list"></ul>
+    </div>
+    <div id="task-details" style="display: none">
+      <h2 id="task-title"></h2>
+      <label for="task-details-text">Details:</label>
+      <textarea
+        id="task-details-text"
+        rows="7"
+        placeholder="Add details..."
+      ></textarea>
+      <label for="task-deadline">Deadline:</label>
+      <div class="date-container">
+        <input type="datetime-local" name="deadline" id="task-deadline" />
+      </div>
+      <div class="back-container">
+        <ion-icon name="chevron-back-outline" class="icon-back"></ion-icon>
+        <a href="#/todos/">Back to todos</a>
+      </div>
+    </div>
+    <!-- prettier-ignore -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <!-- prettier-ignore -->
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
