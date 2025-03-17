@@ -73,14 +73,12 @@ class Controller {
     if (task) {
       document.getElementById("task-title").textContent = task.text;
 
-      const today = new Date().toISOString().slice(0, 16);
-
       if (this.browserDetection() === "Firefox") {
         this.showCustomDeadlineInput();
         //prettier-ignore
         const flatpickrElement = document.getElementById("task-deadline-custom");
 
-        flatpickr(flatpickrElement, {
+        const calendar = flatpickr(flatpickrElement, {
           enableTime: true,
           dateFormat: "d-m-Y H:i",
           time_24hr: true,
@@ -88,7 +86,34 @@ class Controller {
           locale: {
             firstDayOfWeek: 1,
           },
-          // positionElement: document.querySelector("body"), // Position relative to the custom input
+          // Initialize custom properties to track changes
+          onReady: (selectedDates, dateStr, instance) => {
+            instance._hasDateChanged = false;
+            instance._hasHoursChanged = false;
+            instance._hasMinutesChanged = false;
+          },
+          onChange: (selectedDates, dateStr, instance) => {
+            instance._hasDateChanged = true;
+          },
+          onValueUpdate: (selectedDates, dateStr, instance) => {
+            const timeParts = dateStr.split(" ")[1]?.split(":");
+            if (timeParts) {
+              instance._hasHoursChanged = true;
+              instance._hasMinutesChanged = true;
+            }
+          },
+          onClose: (selectedDates, dateStr, instance) => {
+            if (
+              instance._hasDateChanged &&
+              instance._hasHoursChanged &&
+              instance._hasMinutesChanged
+            ) {
+              this.updateDeadline(taskId);
+              instance._hasDateChanged = false;
+              instance._hasHoursChanged = false;
+              instance._hasMinutesChanged = false;
+            }
+          },
         });
       }
 
@@ -108,7 +133,8 @@ class Controller {
       }
 
       deadlineInput.value = `${storedDate} ${storedTime}`.trim();
-      // deadlineInput.setAttribute("min", today);
+      const today = new Date().toISOString().slice(0, 16);
+      deadlineInput.setAttribute("min", today);
 
       // Remove any existing event listeners before adding a new one
       if (this.handleDeadlineChange) {
@@ -179,6 +205,8 @@ class Controller {
   scheduleNotification(taskId, deadline) {
     const task = model.list.find((t) => t.id === taskId);
     if (!task || !deadline) return;
+    // Clear any existing timeout for this task
+    this.removeNotification(taskId);
 
     let deadlineTime = 0;
 
