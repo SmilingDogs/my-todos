@@ -1,2 +1,2 @@
 import "./style.css";
-import "./js/controller";
+import "./js/controller.js";
