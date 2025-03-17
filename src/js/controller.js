@@ -74,7 +74,6 @@ class Controller {
       document.getElementById("task-title").textContent = task.text;
 
       const today = new Date().toISOString().slice(0, 16);
-      console.log(today);
 
       if (this.browserDetection() === "Firefox") {
         this.showCustomDeadlineInput();
@@ -181,7 +180,17 @@ class Controller {
     const task = model.list.find((t) => t.id === taskId);
     if (!task || !deadline) return;
 
-    const deadlineTime = new Date(deadline).getTime();
+    let deadlineTime = 0;
+
+    if (deadline.includes("T")) {
+      deadlineTime = new Date(deadline).getTime();
+    } else {
+      const [date, time] = deadline.split(" ");
+      const [day, month, year] = date.split("-");
+      const formattedDeadline = `${year}-${month}-${day}T${time}:00`;
+      deadlineTime = new Date(formattedDeadline).getTime();
+    }
+
     const currentTime = new Date().getTime();
     const timeUntilDeadline = deadlineTime - currentTime;
 
@@ -205,14 +214,13 @@ class Controller {
   sendNotification(taskId) {
     const task = model.list.find((t) => t.id === taskId);
     if (!task) return;
-    let browserName = this.browser.name;
 
-    if (browserName === "Chrome") {
+    if (this.browserDetection() === "Chrome") {
       this.firePopup(`Deadline is now : ${task.text}`, 6000);
     } else {
       console.log("Notifications support: ", this.notificationSupported);
       new Notification("Todo Reminder", {
-        body: `Deadline is now for: ${task.text}`,
+        body: `Deadline is now : ${task.text}`,
       });
     }
   }
