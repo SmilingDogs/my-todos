@@ -2,6 +2,7 @@ import { Task, model } from "./model.js";
 import View from "./view.js";
 import Router from "./router.js";
 import Bowser from "bowser";
+import flatpickr from "flatpickr";
 
 //prettier-ignore
 let day = new Date().getDate() < 10 ? "0" + new Date().getDate() : new Date().getDate();
@@ -42,23 +43,14 @@ function checkNotificationSupport() {
   }
 }
 
-function browserDetection() {
-  const browser = Bowser.getParser(window.navigator.userAgent);
-  return browser.getBrowser();
-}
-
-console.log("Detected browser :", browserDetection());
-
 class Controller {
   constructor(view) {
     this.view = view;
     new Router(this);
     this.handleDeadlineChange = null;
     this.handleDetailsKeydown = null;
-
     // Check notification support and request permission if needed
     this.notificationSupported = checkNotificationSupport();
-    this.browser = browserDetection();
   }
 
   init() {
@@ -75,22 +67,49 @@ class Controller {
   showTaskDetails(taskId) {
     document.getElementById("todo").style.display = "none";
     document.getElementById("task-details").style.display = "flex";
+    // console.log(this.browserDetection());
 
     const task = model.list.find((t) => t.id === taskId);
     if (task) {
       document.getElementById("task-title").textContent = task.text;
 
       const today = new Date().toISOString().slice(0, 16);
-      const deadlineInput = document.getElementById("task-deadline");
+      console.log(today);
 
-      let storedDate, storedTime;
+      if (this.browserDetection() === "Firefox") {
+        this.showCustomDeadlineInput();
+        //prettier-ignore
+        const flatpickrElement = document.getElementById("task-deadline-custom");
 
-      if (task.deadline) {
-        [storedDate, storedTime] = task.deadline.split("T");
+        flatpickr(flatpickrElement, {
+          enableTime: true,
+          dateFormat: "d-m-Y H:i",
+          time_24hr: true,
+          minDate: "today",
+          locale: {
+            firstDayOfWeek: 1,
+          },
+          // positionElement: document.querySelector("body"), // Position relative to the custom input
+        });
       }
 
-      deadlineInput.value = `${storedDate} ${storedTime}` || "";
-      deadlineInput.setAttribute("min", today);
+      const deadlineInput = document.getElementById(
+        this.browserDetection() === "Firefox"
+          ? "task-deadline-custom"
+          : "task-deadline"
+      );
+
+      let storedDate = "";
+      let storedTime = "";
+
+      if (task.deadline) {
+        const [date, time] = task.deadline.split("T");
+        storedDate = date || "";
+        storedTime = time ? time.slice(0, 5) : ""; // Extract only the time part (HH:mm)
+      }
+
+      deadlineInput.value = `${storedDate} ${storedTime}`.trim();
+      // deadlineInput.setAttribute("min", today);
 
       // Remove any existing event listeners before adding a new one
       if (this.handleDeadlineChange) {
@@ -119,10 +138,24 @@ class Controller {
     }
   }
 
+  showCustomDeadlineInput() {
+    document.getElementById("task-deadline").style.display = "none";
+    document.getElementById("task-deadline-custom").style.display =
+      "inline-block";
+    document
+      .getElementById("label-for-deadline")
+      .setAttribute("for", "task-deadline-custom");
+    document.querySelector(".calendar-icon").style.display = "block";
+  }
+
   updateDeadline(taskId) {
     const task = model.list.find((t) => t.id === taskId);
     if (task) {
-      let deadlineValue = document.getElementById("task-deadline").value;
+      let deadlineValue = document.getElementById(
+        this.browserDetection() === "Firefox"
+          ? "task-deadline-custom"
+          : "task-deadline"
+      ).value;
 
       if (!deadlineValue) {
         delete task.deadline;
@@ -323,6 +356,17 @@ class Controller {
 
   performNavigation() {
     return (window.location.href = "#/todos/");
+  }
+
+  browserDetection() {
+    const browser = Bowser.getParser(window.navigator.userAgent);
+    let data = browser.getBrowser();
+
+    if (data) {
+      return data.name;
+    } else {
+      return "Unable to detect browser";
+    }
   }
 }
 

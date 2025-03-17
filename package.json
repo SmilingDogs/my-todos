@@ -12,6 +12,7 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
-    "bowser": "^2.11.0"
+    "bowser": "^2.11.0",
+    "flatpickr": "^4.6.13"
   }
 }

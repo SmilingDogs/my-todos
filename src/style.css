@@ -269,6 +269,30 @@ input#search-item:focus {
 .icon-back {
   font-size: 1.6rem;
 }
+
+.deadline-custom {
+  font-size: 0.9em;
+  color: brown;
+}
+
+.deadline-custom:focus {
+  outline: brown;
+}
+
+.flatpickr-calendar {
+  top: 7% !important;
+  bottom: 46% !important;
+  left: 16% !important;
+  /* background-color: brown !important; */
+}
+.flatpickr-day,
+span.flatpickr-weekday,
+.flatpickr-current-month {
+  color: brown;
+}
+.flatpickr-day.selected {
+  background-color: brown !important;
+}
 /* Responsive Design */
 @media (max-width: 768px) {
   body {

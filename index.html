@@ -3,9 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Preload CSS -->
-    <link rel="preload" href="/src/style.css" as="style" />
-    <!-- Link CSS -->
     <link rel="stylesheet" href="/src/style.css" />
     <title>My todos</title>
   </head>
@@ -47,9 +44,22 @@
         rows="7"
         placeholder="Add details..."
       ></textarea>
-      <label for="task-deadline">Deadline:</label>
+      <label for="task-deadline" id="label-for-deadline">Deadline:</label>
       <div class="date-container">
         <input type="datetime-local" name="deadline" id="task-deadline" />
+        <input
+          type="text"
+          name="deadline-custom"
+          id="task-deadline-custom"
+          style="display: none"
+          class="deadline-custom"
+          placeholder="Add a deadline..."
+        />
+        <ion-icon
+          name="calendar-outline"
+          class="calendar-icon"
+          style="display: none"
+        ></ion-icon>
       </div>
       <div class="back-container">
         <ion-icon name="chevron-back-outline" class="icon-back"></ion-icon>
