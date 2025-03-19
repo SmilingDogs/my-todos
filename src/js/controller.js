@@ -420,7 +420,7 @@ controller.init();
 const taskInput = document.getElementById("add-item");
 const searchInput = document.getElementById("search-item");
 const backIcon = document.querySelector(".icon-back");
-const colorsContainer = document.querySelector(".colors-container");
+const colorsContainer = document.querySelector(".colors");
 const elements = Array.from(document.querySelectorAll("[data-color]"));
 
 taskInput.addEventListener("keydown", (e) => controller.addTask(e));
