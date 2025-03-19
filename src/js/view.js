@@ -32,6 +32,7 @@ class View {
         const link = document.createElement("a");
         link.href = `#/todos/${what[i].id}`;
         link.setAttribute("class", "item-link");
+        // link.setAttribute("data-color", "");
         link.append(span);
         item.append(link, check, trash, star, edit);
         list.append(item);

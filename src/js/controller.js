@@ -404,6 +404,13 @@ class Controller {
       return "Unable to detect browser";
     }
   }
+
+  setColor(element, color) {
+    element.style.setProperty("--color", color);
+  }
+  removeColor(element) {
+    element.style.removeProperty("--color");
+  }
 }
 
 const view = new View();
@@ -413,17 +420,35 @@ controller.init();
 const taskInput = document.getElementById("add-item");
 const searchInput = document.getElementById("search-item");
 const backIcon = document.querySelector(".icon-back");
+const colorsContainer = document.querySelector(".colors-container");
+const elements = Array.from(document.querySelectorAll("[data-color]"));
 
 taskInput.addEventListener("keydown", (e) => controller.addTask(e));
 taskInput.addEventListener("input", (e) => controller.handleMobileInput(e));
 taskInput.addEventListener("change", () => controller.processTask());
 searchInput.addEventListener("keydown", (e) => controller.searchTask(e));
-
 taskInput.addEventListener("submit", (e) => {
   e.preventDefault();
   controller.processTask();
 });
-
 backIcon.addEventListener("click", () => controller.performNavigation());
+
+colorsContainer.addEventListener("click", (e) => {
+  const targetColor = e.target.getAttribute("data-background-color");
+  if (targetColor == "original") {
+    elements.forEach((element) => controller.removeColor(element));
+    localStorage.removeItem("colorScheme");
+  } else {
+    elements.forEach((element) => controller.setColor(element, targetColor));
+    localStorage.setItem("colorScheme", targetColor);
+  }
+});
+
+document.addEventListener("DOMContentLoaded", (event) => {
+  const savedColor = localStorage.getItem("colorScheme");
+  if (savedColor) {
+    elements.forEach((element) => controller.setColor(element, savedColor));
+  }
+});
 
 export default controller;

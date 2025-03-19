@@ -11,8 +11,8 @@
     />
     <title>My todos</title>
   </head>
-  <body>
-    <h1></h1>
+  <body data-color>
+    <h1 style="margin-top: 45px"></h1>
     <div id="popup">
       <h4 class="notification-title">New Notification</h4>
       <p class="notification-text"></p>
@@ -27,6 +27,7 @@
             type="text"
             name="text"
             placeholder="Add an item..."
+            data-color
           />
         </div>
         <div class="search-container">
@@ -36,6 +37,7 @@
             type="text"
             name="search"
             placeholder="Search an item..."
+            data-color
           />
         </div>
       </div>
@@ -48,10 +50,16 @@
         id="task-details-text"
         rows="7"
         placeholder="Add details..."
+        data-color
       ></textarea>
       <label for="task-deadline" id="label-for-deadline">Deadline:</label>
       <div class="date-container">
-        <input type="datetime-local" name="deadline" id="task-deadline" />
+        <input
+          type="datetime-local"
+          name="deadline"
+          id="task-deadline"
+          data-color
+        />
         <input
           type="text"
           name="deadline-custom"
@@ -59,17 +67,25 @@
           style="display: none"
           class="deadline-custom"
           placeholder="Add a deadline..."
+          data-color
         />
         <ion-icon
           name="calendar-outline"
           class="calendar-icon"
           style="display: none"
+          data-color
         ></ion-icon>
       </div>
       <div class="back-container">
         <ion-icon name="chevron-back-outline" class="icon-back"></ion-icon>
         <a href="#/todos/">Back to todos</a>
       </div>
+    </div>
+    <div class="colors-container">
+      <div class="color-button" data-background-color="original"></div>
+      <div class="color-button" data-background-color="royalblue"></div>
+      <div class="color-button" data-background-color="limegreen"></div>
+      <div class="color-button" data-background-color="orangered"></div>
     </div>
     <!-- prettier-ignore -->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

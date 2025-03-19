@@ -5,6 +5,10 @@
   font-family: "Helvetica", "Arial", sans-serif;
 }
 
+:root {
+  --color: brown;
+}
+
 body {
   position: relative;
   height: 100dvh;
@@ -13,11 +17,11 @@ body {
   background: url("../src/assets/todo-background2.jpg") no-repeat center center
     fixed;
   background-size: cover;
-  color: brown;
+  color: var(--color);
 }
 a {
   text-decoration: none;
-  color: brown;
+  color: var(--color);
 }
 
 h1 {
@@ -45,6 +49,7 @@ h1 {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
+  padding-top: 10px;
 }
 
 .add-container,
@@ -64,10 +69,9 @@ input {
   border: none;
   background: #f6f4f4;
   border-bottom: 2px solid #e5e5e5;
-  border-bottom-left-radius: 7px;
-  border-bottom-right-radius: 7px;
+  border-radius: 10px;
   font-size: 1.2em;
-  color: black;
+  color: var(--color);
   padding: 20px 0px 20px 60px;
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
   -moz-box-sizing: border-box; /* Firefox, other Gecko */
@@ -77,8 +81,8 @@ input {
 
 input#task-deadline {
   padding: 10px 0px 10px 30px;
-  color: brown;
   font-size: 1em;
+  cursor: pointer;
 }
 
 #todo::-webkit-scrollbar {
@@ -86,7 +90,7 @@ input#task-deadline {
 }
 
 #todo::-webkit-scrollbar-thumb {
-  background-color: brown;
+  background-color: var(--color);
   outline: 2px solid slategrey;
 }
 
@@ -142,7 +146,7 @@ ion-icon {
 }
 .edit-input:focus {
   outline: none;
-  border: 2px solid brown;
+  border: 2px solid var(--color);
 }
 ::-webkit-input-placeholder {
   color: #bbb;
@@ -158,11 +162,11 @@ ion-icon {
 }
 
 input#add-item:focus {
-  border-bottom: 2px solid brown;
+  border-bottom: 2px solid var(--color);
   outline: none;
 }
 input#search-item:focus {
-  border-bottom: 2px solid brown;
+  border-bottom: 2px solid var(--color);
   outline: none;
 }
 
@@ -233,7 +237,7 @@ input#search-item:focus {
   position: absolute;
   left: 10px;
   font-size: 1.5rem;
-  color: brown;
+  color: var(--color);
 }
 
 .date-input {
@@ -253,7 +257,7 @@ input#search-item:focus {
 #task-details-text {
   font-size: 0.9em;
   padding: 5px 0.9em;
-  outline-color: brown;
+  outline-color: var(--color);
   max-width: 100%;
 }
 
@@ -272,26 +276,88 @@ input#search-item:focus {
 
 .deadline-custom {
   font-size: 0.9em;
-  color: brown;
+  color: var(--color);
 }
 
 .deadline-custom:focus {
-  outline: brown;
+  outline: var(--color);
 }
 
 .flatpickr-calendar {
   top: 7% !important;
   bottom: 46% !important;
   left: 16% !important;
-  /* background-color: brown !important; */
 }
 .flatpickr-day,
 span.flatpickr-weekday,
 .flatpickr-current-month {
-  color: brown;
+  color: var(--color);
 }
 .flatpickr-day.selected {
-  background-color: brown !important;
+  background-color: var(--color) !important;
+}
+
+.colors-container {
+  position: absolute;
+  border-radius: 7px;
+  left: 3%;
+  bottom: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 10px;
+  padding: 12px;
+  opacity: 0.85;
+  background-color: #e5e5e5;
+}
+
+.color-button {
+  cursor: pointer;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.5em;
+  color: brown;
+}
+
+.color-button:nth-child(1) {
+  background-color: white;
+  border: 2px solid brown;
+  position: relative;
+}
+.color-button:nth-child(1)::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  top: 45%;
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: center;
+  background-color: brown;
+}
+.color-button:nth-child(1)::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  top: 45%;
+  left: 0;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  background-color: brown;
+}
+.color-button:nth-child(2) {
+  background-color: royalblue;
+}
+.color-button:nth-child(3) {
+  background-color: limegreen;
+}
+.color-button:nth-child(4) {
+  background-color: orangered;
 }
 /* Responsive Design */
 @media (max-width: 768px) {
