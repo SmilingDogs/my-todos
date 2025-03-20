@@ -21,6 +21,12 @@
       type="image/png"
       href="/src/assets/icons8-to-do-list-32.png"
     />
+    <link
+      id="flatpickr-theme"
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css"
+    />
     <title>My todos</title>
   </head>
   <body data-color>
@@ -78,7 +84,7 @@
           id="task-deadline-custom"
           style="display: none"
           class="deadline-custom"
-          placeholder="Add a deadline..."
+          placeholder="Select a date..."
           data-color
         />
         <ion-icon
@@ -89,26 +95,42 @@
         ></ion-icon>
       </div>
       <div class="back-container">
-        <ion-icon name="chevron-back-outline" class="icon-back"></ion-icon>
-        <a href="#/todos/">Back to todos</a>
+        <div class="back-container__left-block">
+          <ion-icon name="chevron-back-outline" class="icon-back"></ion-icon>
+          <a href="#/todos/">Back to todos</a>
+        </div>
+        <div class="back-container__right-block">
+          <label for="themes">Calendar theme:</label>
+          <select id="calendar-themes">
+            <option value="">Default</option>
+            <option class="dark" value="dark">dark</option>
+            <option class="material_blue" value="material_blue">
+              material_blue
+            </option>
+            <option class="material_green" value="material_green">
+              material_green
+            </option>
+            <option class="material_red" value="material_red">
+              material_red
+            </option>
+            <option class="material_orange" value="material_orange">
+              material_orange
+            </option>
+            <option class="airbnb" value="airbnb">airbnb</option>
+            <option class="confetti" value="confetti">confetti</option>
+          </select>
+        </div>
       </div>
     </div>
     <dropdown>
       <input id="toggle1" type="checkbox" />
       <!-- prettier-ignore -->
-      <label for="toggle1" class="animate">Colors<i class="fa fa-bars float-right"></i></label>
+      <label for="toggle1" class="animate">Colors</label>
       <ul class="animate colors">
-        <li class="animate" data-background-color="royalblue">
-          Blue<i class="fa fa-code float-right"></i>
-        </li>
-        <!-- prettier-ignore -->
-        <li class="animate" data-background-color="limegreen">Green<i class="fa fa-arrows-alt float-right"></i></li>
-        <li class="animate" data-background-color="orangered">
-          Orange<i class="fa fa-cog float-right"></i>
-        </li>
-        <li class="animate" data-background-color="original">
-          Original<i class="fa fa-cog float-right"></i>
-        </li>
+        <li class="animate" data-background-color="royalblue">Blue</li>
+        <li class="animate" data-background-color="limegreen">Green</li>
+        <li class="animate" data-background-color="orangered">Orange</li>
+        <li class="animate" data-background-color="original">Original</li>
       </ul>
     </dropdown>
     <!-- prettier-ignore -->

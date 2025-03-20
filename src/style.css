@@ -262,14 +262,25 @@ input#search-item:focus {
 }
 
 .back-container {
-  position: relative;
+  /* position: relative; */
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  left: -2%;
+  justify-content: space-between;
+  /* left: -2%; */
   font-size: 0.8em;
+  width: 100%;
+}
+.back-container__left-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.back-container__right-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .icon-back {
   font-size: 1.6rem;
 }
@@ -283,91 +294,13 @@ input#search-item:focus {
   outline: var(--color);
 }
 
-.flatpickr-calendar {
-  top: 7% !important;
-  bottom: 46% !important;
-  left: 16% !important;
-}
-.flatpickr-day,
-span.flatpickr-weekday,
-.flatpickr-current-month {
-  color: var(--color);
-}
-.flatpickr-day.selected {
-  background-color: var(--color) !important;
-}
+/* .flatpickr-calendar {
+  top: 17.9% !important;
+  bottom: 36.3% !important;
+  left: 12% !important;
+} */
 
-.colors-container {
-  position: absolute;
-  border-radius: 7px;
-  left: 3%;
-  bottom: 10%;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 10px;
-  padding: 12px;
-  opacity: 0.85;
-  background-color: #e5e5e5;
-}
-
-.color-button {
-  cursor: pointer;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.5em;
-  color: brown;
-}
-
-.color-button:nth-child(1) {
-  background-color: white;
-  border: 2px solid brown;
-  position: relative;
-}
-.color-button:nth-child(1)::before {
-  content: "";
-  position: absolute;
-  width: 22px;
-  height: 2px;
-  top: 45%;
-  left: 0;
-  transform: rotate(45deg);
-  transform-origin: center;
-  background-color: brown;
-}
-.color-button:nth-child(1)::after {
-  content: "";
-  position: absolute;
-  width: 22px;
-  height: 2px;
-  top: 45%;
-  left: 0;
-  transform: rotate(-45deg);
-  transform-origin: center;
-  background-color: brown;
-}
-.color-button:nth-child(2) {
-  background-color: royalblue;
-}
-.color-button:nth-child(3) {
-  background-color: limegreen;
-}
-.color-button:nth-child(4) {
-  background-color: orangered;
-}
 /*todo Styles for awesome dropdown */
-
-.float-right {
-  float: right;
-}
-.fa {
-  font-size: 0.8em;
-  line-height: 22px !important;
-}
 dropdown {
   position: absolute;
   top: 1%;
@@ -438,11 +371,11 @@ dropdown input:checked ~ ul {
 }
 
 .animate {
-  -webkit-transition: all 0.3s;
-  -moz-transition: all 0.3s;
-  -ms-transition: all 0.3s;
-  -ms-transition: all 0.3s;
-  transition: all 0.3s;
+  -webkit-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  -ms-transition: all 0.4s;
+  -ms-transition: all 0.4s;
+  transition: all 0.4s;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden; /* Chrome and Safari */
   -moz-backface-visibility: hidden; /* Firefox */
