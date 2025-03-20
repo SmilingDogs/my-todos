@@ -25,7 +25,7 @@
       id="flatpickr-theme"
       rel="stylesheet"
       type="text/css"
-      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css"
+      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
     />
     <title>My todos</title>
   </head>
@@ -73,24 +73,14 @@
       <label for="task-deadline" id="label-for-deadline">Deadline:</label>
       <div class="date-container">
         <input
-          type="datetime-local"
-          name="deadline"
-          id="task-deadline"
-          data-color
-        />
-        <input
           type="text"
-          name="deadline-custom"
           id="task-deadline-custom"
-          style="display: none"
-          class="deadline-custom"
+          class="flatpickr"
           placeholder="Select a date..."
-          data-color
         />
         <ion-icon
           name="calendar-outline"
           class="calendar-icon"
-          style="display: none"
           data-color
         ></ion-icon>
       </div>
@@ -100,7 +90,7 @@
           <a href="#/todos/">Back to todos</a>
         </div>
         <div class="back-container__right-block">
-          <label for="themes">Calendar theme:</label>
+          <label for="calendar-themes">Calendar theme:</label>
           <select id="calendar-themes">
             <option value="">Default</option>
             <option class="dark" value="dark">dark</option>

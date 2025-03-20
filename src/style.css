@@ -185,15 +185,12 @@ input#search-item:focus {
   padding: 15px;
   bottom: 50px;
   right: -320px;
-  /* transform: translateY(50%); */
   opacity: 1;
   transition: all 0.8s;
 }
 
 #popup.active {
   right: 2%;
-  /* transform: translate(-50%, -50%); */
-  /* opacity: 1; */
 }
 .notification-title {
   font-weight: 500;
@@ -262,11 +259,9 @@ input#search-item:focus {
 }
 
 .back-container {
-  /* position: relative; */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* left: -2%; */
   font-size: 0.8em;
   width: 100%;
 }
@@ -285,20 +280,14 @@ input#search-item:focus {
   font-size: 1.6rem;
 }
 
-.deadline-custom {
+#task-deadline-custom {
   font-size: 0.9em;
-  color: var(--color);
+  /* color: var(--color); */
 }
 
-.deadline-custom:focus {
+#task-deadline-custom:focus {
   outline: var(--color);
 }
-
-/* .flatpickr-calendar {
-  top: 17.9% !important;
-  bottom: 36.3% !important;
-  left: 12% !important;
-} */
 
 /*todo Styles for awesome dropdown */
 dropdown {
@@ -490,9 +479,6 @@ dropdown input:checked ~ ul {
   .date-input {
     padding: 25px 0px 25px 50px; /* Adjust padding for smaller screens */
     font-size: 0.8em;
-    /* width: 100%;
-    max-width: 100%;
-    min-width: 100%; */
   }
 }
 
@@ -538,8 +524,5 @@ dropdown input:checked ~ ul {
   .date-input {
     padding: 15px 0px 15px 35px;
     font-size: 0.8em;
-    /* width: 100%; 
-    max-width: 100%; 
-    min-width: 100%;  */
   }
 }

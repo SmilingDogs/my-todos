@@ -47,10 +47,12 @@ class Controller {
   constructor(view) {
     this.view = view;
     new Router(this);
-    this.handleDeadlineChange = null;
+    // this.handleDeadlineChange = null;
     this.handleDetailsKeydown = null;
     // Check notification support and request permission if needed
     this.notificationSupported = checkNotificationSupport();
+    this.flatpickrInstance = null;
+    this.currentTaskId = null; // Store the current task ID
   }
 
   init() {
@@ -65,6 +67,7 @@ class Controller {
   }
 
   showTaskDetails(taskId) {
+    this.currentTaskId = taskId; // Store the task ID
     document.getElementById("todo").style.display = "none";
     document.getElementById("task-details").style.display = "flex";
     // console.log(this.browserDetection());
@@ -73,55 +76,50 @@ class Controller {
     if (task) {
       document.getElementById("task-title").textContent = task.text;
 
-      if (this.browserDetection() === "Firefox") {
-        this.showCustomDeadlineInput();
-        //prettier-ignore
-        const flatpickrElement = document.getElementById("task-deadline-custom");
+      // if (this.browserDetection() === "Chrome") {
+      //   this.showCustomDeadlineInput();
+      //prettier-ignore
+      const flatpickrElement = document.getElementById("task-deadline-custom");
 
-        const calendar = flatpickr(flatpickrElement, {
-          enableTime: true,
-          dateFormat: "d-m-Y H:i",
-          time_24hr: true,
-          minDate: "today",
-          locale: {
-            firstDayOfWeek: 1,
-          },
-          // Initialize custom properties to track changes
-          onReady: (selectedDates, dateStr, instance) => {
+      this.flatpickrInstance = flatpickr(flatpickrElement, {
+        enableTime: true,
+        dateFormat: "d-m-Y H:i",
+        time_24hr: true,
+        minDate: "today",
+        locale: {
+          firstDayOfWeek: 1,
+        },
+        // Initialize custom properties to track changes
+        onReady: (selectedDates, dateStr, instance) => {
+          instance._hasDateChanged = false;
+          instance._hasHoursChanged = false;
+          instance._hasMinutesChanged = false;
+        },
+        onChange: (selectedDates, dateStr, instance) => {
+          instance._hasDateChanged = true;
+        },
+        onValueUpdate: (selectedDates, dateStr, instance) => {
+          const timeParts = dateStr.split(" ")[1]?.split(":");
+          if (timeParts) {
+            instance._hasHoursChanged = true;
+            instance._hasMinutesChanged = true;
+          }
+        },
+        onClose: (selectedDates, dateStr, instance) => {
+          if (
+            instance._hasDateChanged &&
+            instance._hasHoursChanged &&
+            instance._hasMinutesChanged
+          ) {
+            this.updateDeadline(taskId);
             instance._hasDateChanged = false;
             instance._hasHoursChanged = false;
             instance._hasMinutesChanged = false;
-          },
-          onChange: (selectedDates, dateStr, instance) => {
-            instance._hasDateChanged = true;
-          },
-          onValueUpdate: (selectedDates, dateStr, instance) => {
-            const timeParts = dateStr.split(" ")[1]?.split(":");
-            if (timeParts) {
-              instance._hasHoursChanged = true;
-              instance._hasMinutesChanged = true;
-            }
-          },
-          onClose: (selectedDates, dateStr, instance) => {
-            if (
-              instance._hasDateChanged &&
-              instance._hasHoursChanged &&
-              instance._hasMinutesChanged
-            ) {
-              this.updateDeadline(taskId);
-              instance._hasDateChanged = false;
-              instance._hasHoursChanged = false;
-              instance._hasMinutesChanged = false;
-            }
-          },
-        });
-      }
+          }
+        },
+      });
 
-      const deadlineInput = document.getElementById(
-        this.browserDetection() === "Firefox"
-          ? "task-deadline-custom"
-          : "task-deadline"
-      );
+      const deadlineInput = document.getElementById("task-deadline-custom");
 
       let storedDate = "";
       let storedTime = "";
@@ -133,15 +131,15 @@ class Controller {
       }
 
       deadlineInput.value = `${storedDate} ${storedTime}`.trim();
-      const today = new Date().toISOString().slice(0, 16);
-      deadlineInput.setAttribute("min", today);
+      // const today = new Date().toISOString().slice(0, 16);
+      // deadlineInput.setAttribute("min", today);
 
       // Remove any existing event listeners before adding a new one
-      if (this.handleDeadlineChange) {
-        deadlineInput.removeEventListener("change", this.handleDeadlineChange);
-      }
-      this.handleDeadlineChange = () => this.updateDeadline(taskId);
-      deadlineInput.addEventListener("change", this.handleDeadlineChange);
+      // if (this.handleDeadlineChange) {
+      //   deadlineInput.removeEventListener("change", this.handleDeadlineChange);
+      // }
+      // this.handleDeadlineChange = () => this.updateDeadline(taskId);
+      // deadlineInput.addEventListener("change", this.handleDeadlineChange);
 
       const detailsTextarea = document.getElementById("task-details-text");
       detailsTextarea.value = task.details || "";
@@ -165,8 +163,8 @@ class Controller {
 
   showCustomDeadlineInput() {
     document.getElementById("task-deadline").style.display = "none";
-    document.getElementById("task-deadline-custom").style.display =
-      "inline-block";
+    // document.getElementById("task-deadline-custom").style.display =
+    //   "inline-block";
     document
       .getElementById("label-for-deadline")
       .setAttribute("for", "task-deadline-custom");
@@ -176,11 +174,7 @@ class Controller {
   updateDeadline(taskId) {
     const task = model.list.find((t) => t.id === taskId);
     if (task) {
-      let deadlineValue = document.getElementById(
-        this.browserDetection() === "Firefox"
-          ? "task-deadline-custom"
-          : "task-deadline"
-      ).value;
+      let deadlineValue = document.getElementById("task-deadline-custom").value;
 
       if (!deadlineValue) {
         delete task.deadline;
@@ -450,5 +444,23 @@ document.addEventListener("DOMContentLoaded", (event) => {
     elements.forEach((element) => controller.setColor(element, savedColor));
   }
 });
+
+document
+  .getElementById("calendar-themes")
+  .addEventListener("change", function (e) {
+    const selectedTheme = e.target.value;
+    console.log(selectedTheme);
+
+    const themeLink = document.getElementById("flatpickr-theme");
+    themeLink.href = `https://npmcdn.com/flatpickr/dist/themes/${selectedTheme}.css`;
+    console.log(themeLink.href);
+
+    themeLink.onload = () => {
+      if (controller.flatpickrInstance) {
+        controller.flatpickrInstance.destroy();
+      }
+      controller.showTaskDetails(controller.currentTaskId);
+    };
+  });
 
 export default controller;
