@@ -410,7 +410,7 @@ class Controller {
 
   async changeCalendarTheme(theme) {
     const themeMap = {
-      dark: () => import("flatpickr/dist/themes/dark.css"),
+      // dark: () => import("flatpickr/dist/themes/dark.css"),
       material_blue: () => import("flatpickr/dist/themes/material_blue.css"),
       material_green: () => import("flatpickr/dist/themes/material_green.css"),
       material_red: () => import("flatpickr/dist/themes/material_red.css"),
@@ -419,9 +419,29 @@ class Controller {
       airbnb: () => import("flatpickr/dist/themes/airbnb.css"),
       confetti: () => import("flatpickr/dist/themes/confetti.css"),
     };
+    // Remove the existing theme stylesheet if it exists
+    const existingThemeLink = document.getElementById("flatpickr-theme");
+    if (existingThemeLink) {
+      existingThemeLink.remove();
+    }
 
-    if (themeMap[theme]) {
+    if (!theme) {
+      const existingStyleTags = document.querySelectorAll(
+        'style[data-vite-dev-id*="/flatpickr/dist/themes"]'
+      );
+      if (existingStyleTags) {
+        existingStyleTags.forEach((tag) => tag.remove());
+      }
+    }
+
+    // Add the new theme stylesheet
+    if (theme && themeMap[theme]) {
       await themeMap[theme]();
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.id = "flatpickr-theme";
+      link.href = `https://npmcdn.com/flatpickr/dist/themes/${theme}.css`;
+      document.head.appendChild(link);
     }
   }
 }
