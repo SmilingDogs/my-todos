@@ -51,8 +51,6 @@ class Controller {
     this.handleDetailsKeydown = null;
     // Check notification support and request permission if needed
     this.notificationSupported = checkNotificationSupport();
-    this.flatpickrInstance = null;
-    this.currentTaskId = null; // Store the current task ID
   }
 
   init() {
@@ -67,7 +65,6 @@ class Controller {
   }
 
   showTaskDetails(taskId) {
-    this.currentTaskId = taskId; // Store the task ID
     document.getElementById("todo").style.display = "none";
     document.getElementById("task-details").style.display = "flex";
     // console.log(this.browserDetection());
@@ -79,9 +76,9 @@ class Controller {
       // if (this.browserDetection() === "Chrome") {
       //   this.showCustomDeadlineInput();
       //prettier-ignore
-      const flatpickrElement = document.getElementById("task-deadline-custom");
+      // const flatpickrElement = document.getElementById("datetime-custom");
 
-      this.flatpickrInstance = flatpickr(flatpickrElement, {
+      flatpickr("#datetime-custom", {
         enableTime: true,
         dateFormat: "d-m-Y H:i",
         time_24hr: true,
@@ -119,7 +116,7 @@ class Controller {
         },
       });
 
-      const deadlineInput = document.getElementById("task-deadline-custom");
+      const deadlineInput = document.getElementById("datetime-custom");
 
       let storedDate = "";
       let storedTime = "";
@@ -163,18 +160,18 @@ class Controller {
 
   showCustomDeadlineInput() {
     document.getElementById("task-deadline").style.display = "none";
-    // document.getElementById("task-deadline-custom").style.display =
+    // document.getElementById("datetime-custom").style.display =
     //   "inline-block";
     document
       .getElementById("label-for-deadline")
-      .setAttribute("for", "task-deadline-custom");
+      .setAttribute("for", "datetime-custom");
     document.querySelector(".calendar-icon").style.display = "block";
   }
 
   updateDeadline(taskId) {
     const task = model.list.find((t) => t.id === taskId);
     if (task) {
-      let deadlineValue = document.getElementById("task-deadline-custom").value;
+      let deadlineValue = document.getElementById("datetime-custom").value;
 
       if (!deadlineValue) {
         delete task.deadline;
@@ -405,6 +402,23 @@ class Controller {
   removeColor(element) {
     element.style.removeProperty("--color");
   }
+
+  async changeCalendarTheme(theme) {
+    const themeMap = {
+      dark: () => import("flatpickr/dist/themes/dark.css"),
+      material_blue: () => import("flatpickr/dist/themes/material_blue.css"),
+      material_green: () => import("flatpickr/dist/themes/material_green.css"),
+      material_red: () => import("flatpickr/dist/themes/material_red.css"),
+      material_orange: () =>
+        import("flatpickr/dist/themes/material_orange.css"),
+      airbnb: () => import("flatpickr/dist/themes/airbnb.css"),
+      confetti: () => import("flatpickr/dist/themes/confetti.css"),
+    };
+
+    if (themeMap[theme]) {
+      await themeMap[theme]();
+    }
+  }
 }
 
 const view = new View();
@@ -445,22 +459,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
   }
 });
 
-document
-  .getElementById("calendar-themes")
-  .addEventListener("change", function (e) {
-    const selectedTheme = e.target.value;
-    console.log(selectedTheme);
-
-    const themeLink = document.getElementById("flatpickr-theme");
-    themeLink.href = `https://npmcdn.com/flatpickr/dist/themes/${selectedTheme}.css`;
-    console.log(themeLink.href);
-
-    themeLink.onload = () => {
-      if (controller.flatpickrInstance) {
-        controller.flatpickrInstance.destroy();
-      }
-      controller.showTaskDetails(controller.currentTaskId);
-    };
-  });
+document.getElementById("calendar-themes").addEventListener("change", (e) => {
+  let selectedTheme = e.target.value;
+  controller.changeCalendarTheme(selectedTheme);
+});
 
 export default controller;
