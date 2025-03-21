@@ -96,6 +96,9 @@ class Controller {
           instance._hasDateChanged = true;
         },
         onValueUpdate: (selectedDates, dateStr, instance) => {
+          if (!dateStr) {
+            this.updateDeadline(taskId);
+          }
           const timeParts = dateStr.split(" ")[1]?.split(":");
           if (timeParts) {
             instance._hasHoursChanged = true;
@@ -112,6 +115,8 @@ class Controller {
             instance._hasDateChanged = false;
             instance._hasHoursChanged = false;
             instance._hasMinutesChanged = false;
+          } else if (!dateStr) {
+            this.updateDeadline(taskId);
           }
         },
       });
