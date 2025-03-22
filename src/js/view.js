@@ -30,7 +30,7 @@ class View {
         const edit = this.createIcon("create-outline");
 
         const link = document.createElement("a");
-        link.href = `#/todos/${what[i].id}`;
+        link.href = `#/todo/${what[i].id}`;
         link.setAttribute("class", "item-link");
         link.append(span);
         item.append(link, check, trash, star, edit);
