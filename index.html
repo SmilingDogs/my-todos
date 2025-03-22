@@ -62,7 +62,7 @@
       <label for="datetime-custom" id="label-for-deadline">Deadline:</label>
       <div class="date-container">
         <input
-          type="text"
+          type="datetime-local"
           name="date-input"
           id="datetime-custom"
           placeholder="select date-time..."
@@ -80,9 +80,11 @@
           <a href="#">Back to todos</a>
         </div>
         <div class="back-container__right-block">
-          <label for="calendar-themes">Calendar theme:</label>
+          <label for="calendar-themes" id="label-calendar-themes"
+            >Calendar theme:</label
+          >
           <select id="calendar-themes">
-            <option value="">Default</option>
+            <option value="Default">Default</option>
             <!-- <option class="dark" value="dark">dark</option> -->
             <option class="material_blue" value="material_blue">
               material_blue

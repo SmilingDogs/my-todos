@@ -49,12 +49,42 @@ class Controller {
     new Router(this);
     this.handleDeadlineChange = null;
     this.handleDetailsKeydown = null;
-    // Check notification support and request permission if needed
     this.notificationSupported = checkNotificationSupport();
+    // Check if the application is used on a mobile screen
+    this.isMobile = window.matchMedia("(max-width: 320px)").matches;
   }
 
   init() {
     this.view.render(model.list);
+
+    const savedColor = localStorage.getItem("colorScheme");
+    if (savedColor) {
+      elements.forEach((element) => controller.setColor(element, savedColor));
+    }
+    const savedTheme = localStorage.getItem("calendarTheme");
+    if (savedTheme) {
+      controller.changeCalendarTheme(savedTheme);
+    }
+    document.getElementById("calendar-themes").value = savedTheme || "Default";
+
+    if (this.isMobile) {
+      this.destroyFlatpickr();
+      this.adjustNotificationPosition();
+    }
+  }
+
+  destroyFlatpickr() {
+    const flatpickrInstance =
+      document.querySelector("#datetime-custom")._flatpickr;
+    if (flatpickrInstance) {
+      flatpickrInstance.destroy();
+    }
+  }
+
+  adjustNotificationPosition() {
+    const popup = document.getElementById("popup");
+    popup.style.right = "50%";
+    popup.style.transform = "translateX(50%)";
   }
 
   showTodoList() {
@@ -73,48 +103,50 @@ class Controller {
     if (task) {
       document.getElementById("task-title").textContent = task.text;
 
-      flatpickr("#datetime-custom", {
-        enableTime: true,
-        dateFormat: "d-m-Y H:i",
-        time_24hr: true,
-        minDate: "today",
-        locale: {
-          firstDayOfWeek: 1,
-        },
-        // Initialize custom properties to track changes
-        onReady: (selectedDates, dateStr, instance) => {
-          instance._hasDateChanged = false;
-          instance._hasHoursChanged = false;
-          instance._hasMinutesChanged = false;
-        },
-        onChange: (selectedDates, dateStr, instance) => {
-          instance._hasDateChanged = true;
-        },
-        onValueUpdate: (selectedDates, dateStr, instance) => {
-          if (!dateStr) {
-            this.updateDeadline(taskId);
-          }
-          const timeParts = dateStr.split(" ")[1]?.split(":");
-          if (timeParts) {
-            instance._hasHoursChanged = true;
-            instance._hasMinutesChanged = true;
-          }
-        },
-        onClose: (selectedDates, dateStr, instance) => {
-          if (
-            instance._hasDateChanged &&
-            instance._hasHoursChanged &&
-            instance._hasMinutesChanged
-          ) {
-            this.updateDeadline(taskId);
+      if (!this.isMobile) {
+        flatpickr("#datetime-custom", {
+          enableTime: true,
+          dateFormat: "d-m-Y H:i",
+          time_24hr: true,
+          minDate: "today",
+          locale: {
+            firstDayOfWeek: 1,
+          },
+          // Initialize custom properties to track changes
+          onReady: (selectedDates, dateStr, instance) => {
             instance._hasDateChanged = false;
             instance._hasHoursChanged = false;
             instance._hasMinutesChanged = false;
-          } else if (!dateStr) {
-            this.updateDeadline(taskId);
-          }
-        },
-      });
+          },
+          onChange: (selectedDates, dateStr, instance) => {
+            instance._hasDateChanged = true;
+          },
+          onValueUpdate: (selectedDates, dateStr, instance) => {
+            if (!dateStr) {
+              this.updateDeadline(taskId);
+            }
+            const timeParts = dateStr.split(" ")[1]?.split(":");
+            if (timeParts) {
+              instance._hasHoursChanged = true;
+              instance._hasMinutesChanged = true;
+            }
+          },
+          onClose: (selectedDates, dateStr, instance) => {
+            if (
+              instance._hasDateChanged &&
+              instance._hasHoursChanged &&
+              instance._hasMinutesChanged
+            ) {
+              this.updateDeadline(taskId);
+              instance._hasDateChanged = false;
+              instance._hasHoursChanged = false;
+              instance._hasMinutesChanged = false;
+            } else if (!dateStr) {
+              this.updateDeadline(taskId);
+            }
+          },
+        });
+      }
 
       const deadlineInput = document.getElementById("datetime-custom");
 
@@ -377,7 +409,7 @@ class Controller {
 
     popup.classList.add("active");
     setTimeout(() => {
-      document.getElementById("popup").classList.remove("active");
+      popup.classList.remove("active");
     }, timeout);
   }
 
@@ -420,7 +452,7 @@ class Controller {
       existingThemeLink.remove();
     }
 
-    if (!theme) {
+    if (theme == "Default") {
       const existingStyleTags = document.querySelectorAll(
         'style[data-vite-dev-id*="/flatpickr/dist/themes"]'
       );
@@ -430,7 +462,7 @@ class Controller {
     }
 
     // Add the new theme stylesheet
-    if (theme && themeMap[theme]) {
+    if (themeMap[theme] && theme !== "Default") {
       await themeMap[theme]();
       const link = document.createElement("link");
       link.rel = "stylesheet";
@@ -443,7 +475,9 @@ class Controller {
 
 const view = new View();
 const controller = new Controller(view);
-controller.init();
+document.addEventListener("DOMContentLoaded", (event) => {
+  controller.init();
+});
 
 const taskInput = document.getElementById("add-item");
 const searchInput = document.getElementById("search-item");
@@ -473,25 +507,13 @@ colorsContainer.addEventListener("click", (e) => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", (event) => {
-  const savedColor = localStorage.getItem("colorScheme");
-  if (savedColor) {
-    elements.forEach((element) => controller.setColor(element, savedColor));
-  }
-  const savedTheme = localStorage.getItem("calendarTheme");
-  if (savedTheme) {
-    controller.changeCalendarTheme(savedTheme);
-  }
-  document.getElementById("calendar-themes").value = savedTheme;
-});
-
 document.getElementById("calendar-themes").addEventListener("change", (e) => {
   let selectedTheme = e.target.value;
   controller.changeCalendarTheme(selectedTheme);
-  if (selectedTheme) {
-    localStorage.setItem("calendarTheme", selectedTheme);
-  } else {
+  if (selectedTheme == "Default") {
     localStorage.removeItem("calendarTheme");
+  } else {
+    localStorage.setItem("calendarTheme", selectedTheme);
   }
 });
 
