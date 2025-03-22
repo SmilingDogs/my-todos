@@ -286,6 +286,7 @@ input#search-item:focus {
 .link-back {
   display: flex;
   align-items: center;
+  padding: 15px 15px 15px 0px;
 }
 
 /*todo Styles for colors dropdown */
