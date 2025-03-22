@@ -486,6 +486,10 @@ dropdown input:checked ~ ul {
     font-size: 1em;
     text-align: center;
   }
+  #label-calendar-themes,
+  #calendar-themes {
+    display: none;
+  }
 }
 
 @media (max-width: 320px) {
@@ -535,10 +539,6 @@ dropdown input:checked ~ ul {
     padding: 25px 25px 30px 40px;
     font-size: 0.9em;
     text-align: center;
-  }
-  #label-calendar-themes,
-  #calendar-themes {
-    display: none;
   }
 
   #popup {
