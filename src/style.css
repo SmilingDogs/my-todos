@@ -503,6 +503,9 @@ dropdown input:checked ~ ul {
     font-size: 1.4rem;
     cursor: pointer;
   }
+  .text-back {
+    font-size: 1em;
+  }
 
   .item-text {
     font-weight: 400;
