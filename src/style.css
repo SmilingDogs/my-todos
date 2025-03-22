@@ -503,6 +503,10 @@ dropdown input:checked ~ ul {
     font-size: 1.4rem;
     cursor: pointer;
   }
+  .link-back {
+    display: flex;
+    align-items: center;
+  }
   .text-back {
     font-size: 1em;
   }
