@@ -265,7 +265,15 @@ class Controller {
   sendNotification(taskId) {
     const task = model.list.find((t) => t.id === taskId);
     if (!task) return;
-    this.firePopup(`Deadline is now : ${task.text}`, 6000);
+    if (this.isMobile) {
+      this.firePopup(`Deadline is now : ${task.text}`, 6000);
+    } else if (!this.isMobile && this.browserDetection() === "Chrome") {
+      this.firePopup(`Deadline is now : ${task.text}`, 6000);
+    } else {
+      new Notification("My todos reminder", {
+        body: `Deadline is now : ${task.text}`,
+      });
+    }
   }
 
   addTask(e) {
