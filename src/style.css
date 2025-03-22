@@ -476,6 +476,9 @@ dropdown input:checked ~ ul {
   #datetime-custom {
     padding: 25px 0px 25px 50px; /* Adjust padding for smaller screens */
     font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -521,7 +524,9 @@ dropdown input:checked ~ ul {
   #datetime-custom {
     padding: 15px 15px 15px 40px;
     font-size: 0.9em;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   #label-calendar-themes,
   #calendar-themes {
