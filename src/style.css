@@ -258,6 +258,7 @@ input#search-item:focus {
   padding: 5px 0.9em;
   outline-color: var(--color);
   max-width: 100%;
+  resize: both;
 }
 
 .back-container {
@@ -467,6 +468,7 @@ dropdown input:checked ~ ul {
 
   #task-details-text {
     width: 100%;
+    resize: both;
   }
 
   .back-container {
@@ -474,11 +476,9 @@ dropdown input:checked ~ ul {
     font-size: 1em;
   }
   #datetime-custom {
-    padding: 25px 0px 25px 50px; /* Adjust padding for smaller screens */
+    padding: 35px 0px 35px 50px; /* Adjust padding for smaller screens */
     font-size: 1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
   }
 }
 
@@ -518,15 +518,13 @@ dropdown input:checked ~ ul {
 
   .back-container {
     left: 0;
-    font-size: 0.7em;
+    font-size: 0.9em;
   }
 
   #datetime-custom {
-    padding: 15px 15px 15px 40px;
+    padding: 25px 25px 30px 40px;
     font-size: 0.9em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
   }
   #label-calendar-themes,
   #calendar-themes {

@@ -266,14 +266,6 @@ class Controller {
     const task = model.list.find((t) => t.id === taskId);
     if (!task) return;
     this.firePopup(`Deadline is now : ${task.text}`, 6000);
-    // if (this.browserDetection() === "Chrome") {
-
-    // } else {
-    //   console.log("Notifications support: ", this.notificationSupported);
-    //   new Notification("Todo Reminder", {
-    //     body: `Deadline is now : ${task.text}`,
-    //   });
-    // }
   }
 
   addTask(e) {
