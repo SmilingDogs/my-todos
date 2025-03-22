@@ -481,7 +481,7 @@ dropdown input:checked ~ ul {
 
 @media (max-width: 320px) {
   #todo {
-    max-width: 90%;
+    max-width: 100%; /* Adjusted to 100% to avoid horizontal scroll */
     padding: 0px 5px;
     margin: 10% auto;
     font-size: 1.3em;
@@ -508,8 +508,8 @@ dropdown input:checked ~ ul {
   #task-details {
     margin: 10% auto;
     padding: 15px;
-    width: 310px;
-    min-width: 310px;
+    width: 100%; /* Adjusted to 100% to avoid horizontal scroll */
+    min-width: 100%; /* Adjusted to 100% to avoid horizontal scroll */
     font-size: 1em;
   }
 
@@ -533,6 +533,7 @@ dropdown input:checked ~ ul {
     right: 50%;
     transform: translateX(50%);
     z-index: 10;
+    width: 90%; /* Adjusted to 90% to avoid horizontal scroll */
   }
   #popup.active {
     right: 50%;
