@@ -68,7 +68,6 @@ h1 {
 input {
   border: none;
   background: #f6f4f4;
-  border-bottom: 2px solid #e5e5e5;
   border-radius: 10px;
   font-size: 1.2em;
   color: var(--color);
@@ -280,22 +279,12 @@ input#search-item:focus {
   font-size: 1.6rem;
 }
 
-#task-deadline-custom {
-  font-size: 0.9em;
-  /* color: var(--color); */
-}
-
-#task-deadline-custom:focus {
-  outline: var(--color);
-}
-
-/*todo Styles for awesome dropdown */
+/*todo Styles for colors dropdown */
 dropdown {
   position: absolute;
   top: 1%;
   left: 1%;
   display: inline-block;
-  /* margin: 20px 20px; */
   z-index: 10;
 }
 dropdown label,
@@ -369,6 +358,15 @@ dropdown input:checked ~ ul {
   -webkit-backface-visibility: hidden; /* Chrome and Safari */
   -moz-backface-visibility: hidden; /* Firefox */
   -ms-backface-visibility: hidden; /* Internet Explorer */
+}
+
+#calendar-themes {
+  border: none;
+  border-radius: 5px;
+  padding: 4px 6px;
+  background-color: #f6f4f4;
+  color: var(--color);
+  cursor: pointer;
 }
 
 /* Responsive Design */

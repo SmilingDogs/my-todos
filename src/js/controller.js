@@ -47,7 +47,7 @@ class Controller {
   constructor(view) {
     this.view = view;
     new Router(this);
-    // this.handleDeadlineChange = null;
+    this.handleDeadlineChange = null;
     this.handleDetailsKeydown = null;
     // Check notification support and request permission if needed
     this.notificationSupported = checkNotificationSupport();
@@ -72,11 +72,6 @@ class Controller {
     const task = model.list.find((t) => t.id === taskId);
     if (task) {
       document.getElementById("task-title").textContent = task.text;
-
-      // if (this.browserDetection() === "Chrome") {
-      //   this.showCustomDeadlineInput();
-      //prettier-ignore
-      // const flatpickrElement = document.getElementById("datetime-custom");
 
       flatpickr("#datetime-custom", {
         enableTime: true,
@@ -136,12 +131,12 @@ class Controller {
       // const today = new Date().toISOString().slice(0, 16);
       // deadlineInput.setAttribute("min", today);
 
-      // Remove any existing event listeners before adding a new one
-      // if (this.handleDeadlineChange) {
-      //   deadlineInput.removeEventListener("change", this.handleDeadlineChange);
-      // }
-      // this.handleDeadlineChange = () => this.updateDeadline(taskId);
-      // deadlineInput.addEventListener("change", this.handleDeadlineChange);
+      //Remove any existing event listeners before adding a new one
+      if (this.handleDeadlineChange) {
+        deadlineInput.removeEventListener("change", this.handleDeadlineChange);
+      }
+      this.handleDeadlineChange = () => this.updateDeadline(taskId);
+      deadlineInput.addEventListener("change", this.handleDeadlineChange);
 
       const detailsTextarea = document.getElementById("task-details-text");
       detailsTextarea.value = task.details || "";
@@ -467,6 +462,7 @@ taskInput.addEventListener("submit", (e) => {
 backIcon.addEventListener("click", () => controller.performNavigation());
 
 colorsContainer.addEventListener("click", (e) => {
+  document.getElementById("toggle1").checked = false;
   const targetColor = e.target.getAttribute("data-background-color");
   if (targetColor == "original") {
     elements.forEach((element) => controller.removeColor(element));
@@ -482,11 +478,21 @@ document.addEventListener("DOMContentLoaded", (event) => {
   if (savedColor) {
     elements.forEach((element) => controller.setColor(element, savedColor));
   }
+  const savedTheme = localStorage.getItem("calendarTheme");
+  if (savedTheme) {
+    controller.changeCalendarTheme(savedTheme);
+  }
+  document.getElementById("calendar-themes").value = savedTheme;
 });
 
 document.getElementById("calendar-themes").addEventListener("change", (e) => {
   let selectedTheme = e.target.value;
   controller.changeCalendarTheme(selectedTheme);
+  if (selectedTheme) {
+    localStorage.setItem("calendarTheme", selectedTheme);
+  } else {
+    localStorage.removeItem("calendarTheme");
+  }
 });
 
 export default controller;
