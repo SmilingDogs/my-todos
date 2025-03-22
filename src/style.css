@@ -283,6 +283,11 @@ input#search-item:focus {
   font-size: 1.6rem;
 }
 
+.link-back {
+  display: flex;
+  align-items: center;
+}
+
 /*todo Styles for colors dropdown */
 dropdown {
   position: absolute;
@@ -503,10 +508,7 @@ dropdown input:checked ~ ul {
     font-size: 1.4rem;
     cursor: pointer;
   }
-  .link-back {
-    display: flex;
-    align-items: center;
-  }
+
   .text-back {
     font-size: 1em;
   }
