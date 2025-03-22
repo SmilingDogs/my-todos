@@ -473,7 +473,7 @@ dropdown input:checked ~ ul {
     left: 0;
     font-size: 1em;
   }
-  .date-input {
+  #datetime-custom {
     padding: 25px 0px 25px 50px; /* Adjust padding for smaller screens */
     font-size: 0.8em;
   }
@@ -518,7 +518,7 @@ dropdown input:checked ~ ul {
     font-size: 0.7em;
   }
 
-  .date-input {
+  #datetime-custom {
     padding: 15px 0px 15px 35px;
     font-size: 0.8em;
   }
