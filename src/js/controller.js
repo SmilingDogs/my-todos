@@ -43,6 +43,12 @@ function checkNotificationSupport() {
   }
 }
 
+function logToPage(message) {
+  const logElement = document.createElement("p");
+  logElement.textContent = message;
+  document.body.appendChild(logElement);
+}
+
 class Controller {
   constructor(view) {
     this.view = view;
@@ -51,7 +57,13 @@ class Controller {
     this.handleDetailsKeydown = null;
     this.notificationSupported = checkNotificationSupport();
     // Check if the application is used on a mobile screen
-    this.isMobile = window.matchMedia("(max-width: 320px)").matches;
+    // this.isMobile = window.matchMedia("(max-width: 320px)").matches;
+    this.isMobile = this.detectMobile();
+    logToPage("Is mobile: " + this.isMobile);
+  }
+  detectMobile() {
+    const userAgent = navigator.userAgent || window.opera;
+    return /android|iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
   }
 
   init() {
