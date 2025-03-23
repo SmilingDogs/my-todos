@@ -61,8 +61,9 @@ class Controller {
 
   init() {
     const savedTodos = localStorage.getItem("todos");
+
     if (savedTodos) {
-      model.list = model.list || JSON.parse(savedTodos);
+      model.list = JSON.parse(savedTodos);
     }
     const savedColor = localStorage.getItem("colorScheme");
     if (savedColor) {
