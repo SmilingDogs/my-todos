@@ -401,6 +401,7 @@ class Controller {
     };
     input.addEventListener("keydown", handleEditSubmit);
     input.addEventListener("input", handleEditSubmit);
+    input.addEventListener("touchstart", handleEditSubmit);
   }
 
   searchItem(query) {
