@@ -96,10 +96,13 @@ class Controller {
     popup.style.right = "50%";
     popup.style.transform = "translateX(50%)";
 
-    const flatpickrInstance =
-      document.querySelector("#datetime-custom")?._flatpickr;
-    if (flatpickrInstance) {
-      flatpickrInstance.destroy();
+    // Only destroy flatpickr on mobile
+    if (this.isMobile) {
+      //prettier-ignore
+      const flatpickrInstance = document.querySelector("#datetime-custom")?._flatpickr;
+      if (flatpickrInstance) {
+        flatpickrInstance.destroy();
+      }
     }
   }
 
@@ -236,8 +239,8 @@ class Controller {
       dateFormat: "Y-m-d H:i",
       time_24hr: true,
       minDate: "today",
-      defaultDate: task.deadline,
-      onChange: (selectedDates) => {
+      defaultDate: task.deadline || null,
+      onClose: (selectedDates) => {
         if (selectedDates.length) {
           this.updateDeadline(taskId);
         }
@@ -273,51 +276,47 @@ class Controller {
   scheduleNotification(taskId, deadline) {
     const task = this.findTask(taskId);
     if (!task || !deadline) return;
-    // Clear any existing timeout for this task
-    this.removeNotification(taskId);
 
-    let deadlineTime = 0;
+    this.removeNotification(taskId); // Clear existing notification
 
-    if (deadline.includes("T")) {
-      deadlineTime = new Date(deadline).getTime();
-    } else {
-      const [date, time] = deadline.split(" ");
-      const [day, month, year] = date.split("-");
-      const formattedDeadline = `${year}-${month}-${day}T${time}:00`;
-      deadlineTime = new Date(formattedDeadline).getTime();
-    }
-
+    const deadlineTime = new Date(deadline).getTime();
     const currentTime = new Date().getTime();
     const timeUntilDeadline = deadlineTime - currentTime;
 
     if (timeUntilDeadline > 0) {
-      model.timeouts.set(
-        "timeout_" + taskId,
-        setTimeout(() => this.sendNotification(taskId), timeUntilDeadline)
-      );
-    }
-  }
+      const timeoutId = setTimeout(() => {
+        this.sendNotification(taskId);
+      }, timeUntilDeadline);
 
-  removeNotification(taskId) {
-    let timeoutToClear = "timeout_" + taskId;
-
-    if (model.timeouts.has(timeoutToClear)) {
-      clearTimeout(model.timeouts.get(timeoutToClear));
-      model.timeouts.delete(timeoutToClear);
+      model.timeouts.set(`timeout_${taskId}`, timeoutId);
     }
   }
 
   sendNotification(taskId) {
     const task = this.findTask(taskId);
     if (!task) return;
-
     const browserName = this.browserDetection();
-    if (this.isMobile || browserName === "Chrome") {
-      this.firePopup(`Deadline is now : ${task.text}`, 6000);
-    } else {
-      new Notification("My todos reminder", {
-        body: `Deadline is now : ${task.text}`,
+
+    if (browserName === "Chrome" || this.isMobile) {
+      this.firePopup(`Deadline is now: ${task.text}`, 6000);
+    } else if (
+      this.notificationSupported &&
+      Notification.permission === "granted"
+    ) {
+      new Notification("Task Deadline", {
+        body: `Deadline is now: ${task.text}`,
+        icon: "/favicon.ico",
       });
+    } else {
+      this.firePopup(`Deadline is now: ${task.text}`, 6000);
+    }
+  }
+
+  removeNotification(taskId) {
+    const timeoutKey = `timeout_${taskId}`;
+    if (model.timeouts.has(timeoutKey)) {
+      clearTimeout(model.timeouts.get(timeoutKey));
+      model.timeouts.delete(timeoutKey);
     }
   }
 
