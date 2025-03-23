@@ -50,104 +50,134 @@ class Controller {
     this.handleDeadlineChange = null;
     this.handleDetailsKeydown = null;
     this.notificationSupported = checkNotificationSupport();
-    // this.isMobile = window.matchMedia("(max-width: 320px)").matches;
     this.isMobile = this.detectMobile();
   }
 
   detectMobile() {
-    const userAgent = navigator.userAgent || window.opera;
-    return /android|iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    return /android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
   }
 
   init() {
     const savedTodos = localStorage.getItem("todos");
-
     if (savedTodos) {
       model.list = JSON.parse(savedTodos);
     }
+
     const savedColor = localStorage.getItem("colorScheme");
     if (savedColor) {
-      elements.forEach((element) => controller.setColor(element, savedColor));
+      const elements = Array.from(document.querySelectorAll("[data-color]"));
+      elements.forEach((element) => this.setColor(element, savedColor));
     }
+
     const savedTheme = localStorage.getItem("calendarTheme");
     if (savedTheme) {
-      controller.changeCalendarTheme(savedTheme);
+      document.getElementById("calendar-themes").value = savedTheme;
+      this.changeCalendarTheme(savedTheme);
     }
-    document.getElementById("calendar-themes").value = savedTheme || "Default";
 
     if (this.isMobile) {
-      this.destroyFlatpickr();
-      this.adjustNotificationPosition();
+      this.setupMobileView();
     }
+
     this.view.render(model.list);
-    this.addTouchEventListeners();
+    this.setupEventListeners();
   }
 
-  addTouchEventListeners() {
-    const taskInput = document.getElementById("add-item");
-    const searchInput = document.getElementById("search-item");
-    const todoList = document.getElementById("list");
+  setupMobileView() {
+    const deadlineInput = document.getElementById("datetime-custom");
+    if (deadlineInput) {
+      deadlineInput.type = "datetime-local";
+      deadlineInput.min = new Date().toISOString().slice(0, 16);
+    }
 
-    // Add task events
-    taskInput.addEventListener("touchend", (e) => {
-      e.preventDefault();
-      this.processTask();
-    });
+    const popup = document.getElementById("popup");
+    popup.style.right = "50%";
+    popup.style.transform = "translateX(50%)";
 
-    //Search task events
-    searchInput.addEventListener("touchend", (e) => {
-      e.preventDefault();
-      const inputValue = searchInput.value.trim();
-      if (inputValue) {
-        this.searchItem(inputValue);
-      }
-    });
-
-    //Todo list item events
-    todoList.addEventListener("touchend", (e) => {
-      const target = e.target;
-      if (!target.matches("ion-icon")) return;
-      const item = target.closest(".item");
-      if (!item) return;
-
-      const taskText = item.querySelector(".item-text").textContent;
-      const task = model.list.find((t) => t.text === taskText);
-
-      let targetName = target.getAttribute("name");
-
-      switch (targetName) {
-        case "checkmark-outline":
-          this.completeItem(task);
-          break;
-        case "trash-outline":
-          this.deleteItem(task);
-          break;
-        case "star-outline":
-        case "star":
-          this.prioritizeItem(task);
-          break;
-        case "create-outline":
-          this.editItem(task, e);
-          break;
-        case "alarm-outline":
-          this.showTaskDetails(task.id);
-          break;
-      }
-    });
-  }
-
-  destroyFlatpickr() {
     const flatpickrInstance =
-      document.querySelector("#datetime-custom")._flatpickr;
+      document.querySelector("#datetime-custom")?._flatpickr;
     if (flatpickrInstance) {
       flatpickrInstance.destroy();
     }
   }
 
-  adjustNotificationPosition() {
-    const popup = document.getElementById("popup");
-    popup.style.right = "50%";
-    popup.style.transform = "translateX(50%)";
+  setupEventListeners() {
+    const taskInput = document.getElementById("add-item");
+    const searchInput = document.getElementById("search-item");
+    const todoList = document.getElementById("list");
+    const eventType = this.isMobile ? "touchend" : "click";
+
+    if (this.isMobile) {
+      taskInput.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        this.processTask();
+      });
+
+      searchInput.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        const value = searchInput.value.trim();
+        if (value) this.searchItem(value);
+      });
+
+      todoList.addEventListener("touchend", (e) => {
+        const target = e.target;
+        if (!target.matches("ion-icon")) return;
+
+        e.preventDefault();
+        const item = target.closest(".item");
+        if (!item) return;
+
+        const taskId = item.dataset.id;
+        const task = this.findTask(taskId);
+        if (!task) return;
+
+        switch (target.getAttribute("name")) {
+          case "checkmark-outline":
+            this.completeItem(task);
+            break;
+          case "trash-outline":
+            this.deleteItem(task);
+            break;
+          case "star-outline":
+          case "star":
+            this.prioritizeItem(task);
+            break;
+          case "create-outline":
+            this.editItem(task, e);
+            break;
+          case "alarm-outline":
+            this.showTaskDetails(task.id);
+            break;
+        }
+      });
+    } else {
+      taskInput.addEventListener("keydown", (e) => this.addTask(e));
+      taskInput.addEventListener("input", (e) => this.handleMobileInput(e));
+      searchInput.addEventListener("keydown", (e) => this.searchTask(e));
+    }
+
+    document.querySelector(".icon-back")?.addEventListener(eventType, (e) => {
+      e.preventDefault();
+      this.performNavigation();
+    });
+
+    document.querySelector(".colors")?.addEventListener(eventType, (e) => {
+      e.preventDefault();
+      this.handleColorChange(e);
+    });
+
+    document
+      .getElementById("calendar-themes")
+      .addEventListener("change", (e) => {
+        let selectedTheme = e.target.value;
+        this.changeCalendarTheme(selectedTheme);
+        localStorage.setItem(
+          "calendarTheme",
+          selectedTheme === "Default" ? "" : selectedTheme
+        );
+      });
   }
 
   showTodoList() {
@@ -161,91 +191,58 @@ class Controller {
     document.getElementById("task-details").style.display = "flex";
 
     const task = this.findTask(taskId);
-    if (task) {
-      document.getElementById("task-title").textContent = task.text;
+    if (!task) return;
 
-      if (!this.isMobile) {
-        flatpickr("#datetime-custom", {
-          enableTime: true,
-          dateFormat: "d-m-Y H:i",
-          time_24hr: true,
-          minDate: "today",
-          locale: {
-            firstDayOfWeek: 1,
-          },
-          // Initialize custom properties to track changes
-          onReady: (selectedDates, dateStr, instance) => {
-            instance._hasDateChanged = false;
-            instance._hasHoursChanged = false;
-            instance._hasMinutesChanged = false;
-          },
-          onChange: (selectedDates, dateStr, instance) => {
-            instance._hasDateChanged = true;
-          },
-          onValueUpdate: (selectedDates, dateStr, instance) => {
-            if (!dateStr) {
-              this.updateDeadline(taskId);
-            }
-            const timeParts = dateStr.split(" ")[1]?.split(":");
-            if (timeParts) {
-              instance._hasHoursChanged = true;
-              instance._hasMinutesChanged = true;
-            }
-          },
-          onClose: (selectedDates, dateStr, instance) => {
-            if (
-              instance._hasDateChanged &&
-              instance._hasHoursChanged &&
-              instance._hasMinutesChanged
-            ) {
-              this.updateDeadline(taskId);
-              instance._hasDateChanged = false;
-              instance._hasHoursChanged = false;
-              instance._hasMinutesChanged = false;
-            } else if (!dateStr) {
-              this.updateDeadline(taskId);
-            }
-          },
-        });
-      }
+    document.getElementById("task-title").textContent = task.text;
+    const deadlineInput = document.getElementById("datetime-custom");
 
-      const deadlineInput = document.getElementById("datetime-custom");
-
-      let storedDate = "";
-      let storedTime = "";
+    if (this.isMobile) {
+      deadlineInput.type = "datetime-local";
+      deadlineInput.min = new Date().toISOString().slice(0, 16);
 
       if (task.deadline) {
-        const [date, time] = task.deadline.split("T");
-        storedDate = date || "";
-        storedTime = time ? time.slice(0, 5) : ""; // Extract only the time part (HH:mm)
+        deadlineInput.value = task.deadline;
       }
-
-      deadlineInput.value = `${storedDate} ${storedTime}`.trim();
-
-      //Remove any existing event listeners before adding a new one
-      if (this.handleDeadlineChange) {
-        deadlineInput.removeEventListener("change", this.handleDeadlineChange);
-      }
-      this.handleDeadlineChange = () => this.updateDeadline(taskId);
-      deadlineInput.addEventListener("change", this.handleDeadlineChange);
-
-      const detailsTextarea = document.getElementById("task-details-text");
-      detailsTextarea.value = task.details || "";
-
-      if (this.handleDetailsKeydown) {
-        detailsTextarea.removeEventListener(
-          "keydown",
-          this.handleDetailsKeydown
-        );
-      }
-      this.handleDetailsKeydown = (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          this.updateTaskDetails(taskId, detailsTextarea.value);
-        }
-      };
-      detailsTextarea.addEventListener("keydown", this.handleDetailsKeydown);
+    } else {
+      this.setupFlatpickr(deadlineInput, task, taskId);
     }
+
+    // Setup deadline change handler
+    if (this.handleDeadlineChange) {
+      deadlineInput.removeEventListener("change", this.handleDeadlineChange);
+    }
+    this.handleDeadlineChange = () => this.updateDeadline(taskId);
+    deadlineInput.addEventListener("change", this.handleDeadlineChange);
+
+    // Setup details textarea
+    const detailsTextarea = document.getElementById("task-details-text");
+    detailsTextarea.value = task.details || "";
+
+    if (this.handleDetailsKeydown) {
+      detailsTextarea.removeEventListener("keydown", this.handleDetailsKeydown);
+    }
+    this.handleDetailsKeydown = (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        this.updateTaskDetails(taskId, detailsTextarea.value);
+      }
+    };
+    detailsTextarea.addEventListener("keydown", this.handleDetailsKeydown);
+  }
+
+  setupFlatpickr(input, task, taskId) {
+    flatpickr(input, {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      time_24hr: true,
+      minDate: "today",
+      defaultDate: task.deadline,
+      onChange: (selectedDates) => {
+        if (selectedDates.length) {
+          this.updateDeadline(taskId);
+        }
+      },
+    });
   }
 
   updateDeadline(taskId) {
@@ -324,18 +321,6 @@ class Controller {
     }
   }
 
-  addTask(e) {
-    if (
-      e.type === "touchend" ||
-      e.key === "Enter" ||
-      e.code === "NumpadEnter" ||
-      e.key === "Done"
-    ) {
-      e.preventDefault();
-      this.processTask();
-    }
-  }
-
   handleMobileInput(e) {
     if (e.inputType === "insertText" && e.data === "\n") {
       e.preventDefault();
@@ -343,13 +328,23 @@ class Controller {
     }
   }
 
-  processTask() {
-    let inputField = document.getElementById("add-item");
-    let inputValue = inputField.value.trim();
+  addTask(e) {
+    if (
+      this.isMobile
+        ? e.type === "touchend"
+        : e.key === "Enter" || e.code === "NumpadEnter"
+    ) {
+      e.preventDefault();
+      this.processTask();
+    }
+  }
 
+  processTask() {
+    const inputField = document.getElementById("add-item");
+    const inputValue = inputField.value.trim();
     if (!inputValue) return;
     //prettier-ignore
-    if (model.list.some((i) => i.text.toLowerCase() === inputValue.toLowerCase())) {
+    if (model.list.some((item) => item.text.toLowerCase() === inputValue.toLowerCase())) {
       this.firePopup("Task already exists", 5000);
       return;
     }
@@ -376,7 +371,7 @@ class Controller {
   sortItems() {
     return model.list.sort((a, b) => Number(a.completed) - Number(b.completed));
   }
-
+  // ... keep all other existing methods (completeItem, deleteItem, etc.) ...
   addItem(task) {
     model.list.push(task);
     this.sortItems();
@@ -480,6 +475,21 @@ class Controller {
     return model.list.find((t) => t.id === taskId);
   }
 
+  handleColorChange(e) {
+    e.preventDefault();
+    const elements = Array.from(document.querySelectorAll("[data-color]"));
+    document.getElementById("toggle1").checked = false;
+    const targetColor = e.target.getAttribute("data-background-color");
+
+    if (targetColor == "original") {
+      elements.forEach((element) => controller.removeColor(element));
+      localStorage.removeItem("colorScheme");
+    } else {
+      elements.forEach((element) => controller.setColor(element, targetColor));
+      localStorage.setItem("colorScheme", targetColor);
+    }
+  }
+
   browserDetection() {
     const browser = Bowser.getParser(window.navigator.userAgent);
     let data = browser.getBrowser();
@@ -494,6 +504,7 @@ class Controller {
   setColor(element, color) {
     element.style.setProperty("--color", color);
   }
+
   removeColor(element) {
     element.style.removeProperty("--color");
   }
@@ -535,55 +546,12 @@ class Controller {
   }
 }
 
+// Initialize
 const view = new View();
 const controller = new Controller(view);
-document.addEventListener("DOMContentLoaded", (event) => {
+
+document.addEventListener("DOMContentLoaded", () => {
   controller.init();
-});
-
-const taskInput = document.getElementById("add-item");
-const searchInput = document.getElementById("search-item");
-const backIcon = document.querySelector(".icon-back");
-const colorsContainer = document.querySelector(".colors");
-const elements = Array.from(document.querySelectorAll("[data-color]"));
-
-// Handle both desktop and mobile events
-if (!controller.isMobile) {
-  taskInput.addEventListener("keydown", (e) => controller.addTask(e));
-  taskInput.addEventListener("input", (e) => controller.handleMobileInput(e));
-  taskInput.addEventListener("change", () => controller.processTask());
-  searchInput.addEventListener("keydown", (e) => controller.searchTask(e));
-}
-
-backIcon.addEventListener(controller.isMobile ? "touchend" : "click", (e) => {
-  e.preventDefault();
-  controller.performNavigation();
-});
-
-colorsContainer.addEventListener(
-  controller.isMobile ? "touchend" : "click",
-  (e) => {
-    e.preventDefault();
-    document.getElementById("toggle1").checked = false;
-    const targetColor = e.target.getAttribute("data-background-color");
-    if (targetColor == "original") {
-      elements.forEach((element) => controller.removeColor(element));
-      localStorage.removeItem("colorScheme");
-    } else {
-      elements.forEach((element) => controller.setColor(element, targetColor));
-      localStorage.setItem("colorScheme", targetColor);
-    }
-  }
-);
-
-document.getElementById("calendar-themes").addEventListener("change", (e) => {
-  let selectedTheme = e.target.value;
-  controller.changeCalendarTheme(selectedTheme);
-  if (selectedTheme == "Default") {
-    localStorage.removeItem("calendarTheme");
-  } else {
-    localStorage.setItem("calendarTheme", selectedTheme);
-  }
 });
 
 export default controller;

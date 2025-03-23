@@ -22,6 +22,7 @@ class View {
         const span = document.createElement("span");
         span.textContent = what[i].text;
         item.setAttribute("class", "item");
+        item.setAttribute("data-id", what[i].id);
         span.setAttribute("class", "item-text");
 
         const check = this.createIcon("checkmark-outline");
@@ -37,8 +38,10 @@ class View {
         list.append(item);
 
         if (what[i].completed) {
-          //prettier-ignore
-          span.setAttribute("style", "text-decoration: line-through; color: #bbb");
+          span.setAttribute(
+            "style",
+            "text-decoration: line-through; color: #bbb"
+          );
           check.setAttribute("style", "color: #bbb");
           trash.setAttribute("style", "color: #bbb");
           star.setAttribute("style", "color: #bbb");
@@ -53,31 +56,27 @@ class View {
           link.append(deadline);
         }
 
-        check.addEventListener("click", () => controller.completeItem(what[i]));
-        check.addEventListener("touchstart", () =>
-          controller.completeItem(what[i])
-        );
-        trash.addEventListener("click", () => controller.deleteItem(what[i]));
-        trash.addEventListener("touchstart", () =>
-          controller.deleteItem(what[i])
-        );
-        //prettier-ignore
-        star.addEventListener("click", () => controller.prioritizeItem(what[i]));
-        star.addEventListener("touchstart", () =>
-          controller.prioritizeItem(what[i])
-        );
-        edit.addEventListener("click", (e) => controller.editItem(what[i], e));
-        edit.addEventListener("touchstart", (e) =>
-          controller.editItem(what[i], e)
-        );
-        const add = document.querySelector(".add-icon");
-        const search = document.querySelector(".search-icon");
+        // Use the appropriate event based on device type
+        const eventType = controller.isMobile ? "touchend" : "click";
 
-        add.addEventListener("click", () => {
-          document.getElementById("add-item").focus();
+        check.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          controller.completeItem(what[i]);
         });
-        search.addEventListener("click", () => {
-          document.getElementById("search-item").focus();
+
+        trash.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          controller.deleteItem(what[i]);
+        });
+
+        star.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          controller.prioritizeItem(what[i]);
+        });
+
+        edit.addEventListener(eventType, (e) => {
+          e.preventDefault();
+          controller.editItem(what[i], e);
         });
       }
     } else {
@@ -87,7 +86,6 @@ class View {
 
   renderEmpty(text) {
     this.clearList();
-
     const item = document.createElement("li");
     const span = document.createElement("span");
     item.className = "item";
