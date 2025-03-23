@@ -23,9 +23,7 @@ class Task {
 }
 
 const model = {
-  list: localStorage.getItem("todos")
-    ? JSON.parse(localStorage.getItem("todos"))
-    : [],
+  list: [],
   search: [],
   timeouts: new Map(),
 };

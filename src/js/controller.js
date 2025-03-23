@@ -60,8 +60,10 @@ class Controller {
   }
 
   init() {
-    this.view.render(model.list);
-
+    const savedTodos = localStorage.getItem("todos");
+    if (savedTodos) {
+      model.list = model.list || JSON.parse(savedTodos);
+    }
     const savedColor = localStorage.getItem("colorScheme");
     if (savedColor) {
       elements.forEach((element) => controller.setColor(element, savedColor));
@@ -76,17 +78,51 @@ class Controller {
       this.destroyFlatpickr();
       this.adjustNotificationPosition();
     }
-
+    this.view.render(model.list);
     this.addTouchEventListeners();
   }
 
   addTouchEventListeners() {
     const taskInput = document.getElementById("add-item");
     const searchInput = document.getElementById("search-item");
+    const todoList = document.getElementById("list");
 
-    taskInput.addEventListener("touchstart", (e) => this.addTask(e));
-    taskInput.addEventListener("touchend", (e) => this.handleMobileInput(e));
-    searchInput.addEventListener("touchstart", (e) => this.searchTask(e));
+    // Add task events
+    taskInput.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      this.processTask();
+    });
+
+    //Search task events
+    searchInput.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      const inputValue = searchInput.value.trim();
+      if (inputValue) {
+        this.searchItem(inputValue);
+      }
+    });
+
+    //Todo list item events
+    todoList.addEventListener("touchend", (e) => {
+      const target = e.target;
+      const item = target.closest(".item");
+      if (!item) return;
+
+      const taskText = item.querySelector(".item-text").textContent;
+      const task = model.list.find((t) => t.text === taskText);
+
+      if (target.classList.contains("complete-btn")) {
+        this.completeItem(task);
+      } else if (target.classList.contains("delete-btn")) {
+        this.deleteItem(task);
+      } else if (target.classList.contains("priority-btn")) {
+        this.prioritizeItem(task);
+      } else if (target.classList.contains("edit-btn")) {
+        this.editItem(task, e);
+      } else if (target.classList.contains("details-btn")) {
+        this.showTaskDetails(task.id);
+      }
+    });
   }
 
   destroyFlatpickr() {
@@ -278,7 +314,12 @@ class Controller {
   }
 
   addTask(e) {
-    if (e.key === "Enter" || e.code === "NumpadEnter") {
+    if (
+      e.type === "touchend" ||
+      e.key === "Enter" ||
+      e.code === "NumpadEnter" ||
+      e.key === "Done"
+    ) {
       e.preventDefault();
       this.processTask();
     }
@@ -307,7 +348,12 @@ class Controller {
   }
 
   searchTask(e) {
-    if (e.key === "Enter" || e.key === "NumpadEnter" || e.key === "Done") {
+    if (
+      e.type === "touchend" ||
+      e.key === "Enter" ||
+      e.key === "NumpadEnter" ||
+      e.key === "Done"
+    ) {
       e.preventDefault();
       let inputValue = document.getElementById("search-item").value.trim();
       if (inputValue) {
@@ -490,27 +536,34 @@ const backIcon = document.querySelector(".icon-back");
 const colorsContainer = document.querySelector(".colors");
 const elements = Array.from(document.querySelectorAll("[data-color]"));
 
-taskInput.addEventListener("keydown", (e) => controller.addTask(e));
-taskInput.addEventListener("input", (e) => controller.handleMobileInput(e));
-taskInput.addEventListener("change", () => controller.processTask());
-searchInput.addEventListener("keydown", (e) => controller.searchTask(e));
-taskInput.addEventListener("submit", (e) => {
-  e.preventDefault();
-  controller.processTask();
-});
-backIcon.addEventListener("click", () => controller.performNavigation());
+// Handle both desktop and mobile events
+if (!controller.isMobile) {
+  taskInput.addEventListener("keydown", (e) => controller.addTask(e));
+  taskInput.addEventListener("input", (e) => controller.handleMobileInput(e));
+  taskInput.addEventListener("change", () => controller.processTask());
+  searchInput.addEventListener("keydown", (e) => controller.searchTask(e));
+}
 
-colorsContainer.addEventListener("click", (e) => {
-  document.getElementById("toggle1").checked = false;
-  const targetColor = e.target.getAttribute("data-background-color");
-  if (targetColor == "original") {
-    elements.forEach((element) => controller.removeColor(element));
-    localStorage.removeItem("colorScheme");
-  } else {
-    elements.forEach((element) => controller.setColor(element, targetColor));
-    localStorage.setItem("colorScheme", targetColor);
-  }
+backIcon.addEventListener(controller.isMobile ? "touchend" : "click", (e) => {
+  e.preventDefault();
+  controller.performNavigation();
 });
+
+colorsContainer.addEventListener(
+  controller.isMobile ? "touchend" : "click",
+  (e) => {
+    e.preventDefault();
+    document.getElementById("toggle1").checked = false;
+    const targetColor = e.target.getAttribute("data-background-color");
+    if (targetColor == "original") {
+      elements.forEach((element) => controller.removeColor(element));
+      localStorage.removeItem("colorScheme");
+    } else {
+      elements.forEach((element) => controller.setColor(element, targetColor));
+      localStorage.setItem("colorScheme", targetColor);
+    }
+  }
+);
 
 document.getElementById("calendar-themes").addEventListener("change", (e) => {
   let selectedTheme = e.target.value;
