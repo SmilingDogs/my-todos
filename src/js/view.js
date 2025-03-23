@@ -54,10 +54,22 @@ class View {
         }
 
         check.addEventListener("click", () => controller.completeItem(what[i]));
+        check.addEventListener("touchstart", () =>
+          controller.completeItem(what[i])
+        );
         trash.addEventListener("click", () => controller.deleteItem(what[i]));
+        trash.addEventListener("touchstart", () =>
+          controller.deleteItem(what[i])
+        );
         //prettier-ignore
         star.addEventListener("click", () => controller.prioritizeItem(what[i]));
+        star.addEventListener("touchstart", () =>
+          controller.prioritizeItem(what[i])
+        );
         edit.addEventListener("click", (e) => controller.editItem(what[i], e));
+        edit.addEventListener("touchstart", (e) =>
+          controller.editItem(what[i], e)
+        );
         const add = document.querySelector(".add-icon");
         const search = document.querySelector(".search-icon");
 

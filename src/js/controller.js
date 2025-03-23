@@ -83,6 +83,17 @@ class Controller {
       this.destroyFlatpickr();
       this.adjustNotificationPosition();
     }
+
+    this.addTouchEventListeners();
+  }
+
+  addTouchEventListeners() {
+    const taskInput = document.getElementById("add-item");
+    const searchInput = document.getElementById("search-item");
+
+    taskInput.addEventListener("touchstart", (e) => this.addTask(e));
+    taskInput.addEventListener("touchend", (e) => this.handleMobileInput(e));
+    searchInput.addEventListener("touchstart", (e) => this.searchTask(e));
   }
 
   destroyFlatpickr() {
