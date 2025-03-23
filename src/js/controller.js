@@ -43,12 +43,6 @@ function checkNotificationSupport() {
   }
 }
 
-function logToPage(message) {
-  const logElement = document.createElement("p");
-  logElement.textContent = message;
-  document.body.appendChild(logElement);
-}
-
 class Controller {
   constructor(view) {
     this.view = view;
@@ -56,11 +50,10 @@ class Controller {
     this.handleDeadlineChange = null;
     this.handleDetailsKeydown = null;
     this.notificationSupported = checkNotificationSupport();
-    // Check if the application is used on a mobile screen
     // this.isMobile = window.matchMedia("(max-width: 320px)").matches;
     this.isMobile = this.detectMobile();
-    logToPage("Is mobile: " + this.isMobile);
   }
+
   detectMobile() {
     const userAgent = navigator.userAgent || window.opera;
     return /android|iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
@@ -114,15 +107,13 @@ class Controller {
     document.getElementById("todo").style.display = "block";
     document.getElementById("task-details").style.display = "none";
     this.view.render(model.list);
-    console.log(model.list);
   }
 
   showTaskDetails(taskId) {
     document.getElementById("todo").style.display = "none";
     document.getElementById("task-details").style.display = "flex";
-    // console.log(this.browserDetection());
 
-    const task = model.list.find((t) => t.id === taskId);
+    const task = this.findTask(taskId);
     if (task) {
       document.getElementById("task-title").textContent = task.text;
 
@@ -183,8 +174,6 @@ class Controller {
       }
 
       deadlineInput.value = `${storedDate} ${storedTime}`.trim();
-      // const today = new Date().toISOString().slice(0, 16);
-      // deadlineInput.setAttribute("min", today);
 
       //Remove any existing event listeners before adding a new one
       if (this.handleDeadlineChange) {
@@ -196,7 +185,6 @@ class Controller {
       const detailsTextarea = document.getElementById("task-details-text");
       detailsTextarea.value = task.details || "";
 
-      // Remove any existing event listeners before adding a new one
       if (this.handleDetailsKeydown) {
         detailsTextarea.removeEventListener(
           "keydown",
@@ -213,18 +201,8 @@ class Controller {
     }
   }
 
-  showCustomDeadlineInput() {
-    document.getElementById("task-deadline").style.display = "none";
-    // document.getElementById("datetime-custom").style.display =
-    //   "inline-block";
-    document
-      .getElementById("label-for-deadline")
-      .setAttribute("for", "datetime-custom");
-    document.querySelector(".calendar-icon").style.display = "block";
-  }
-
   updateDeadline(taskId) {
-    const task = model.list.find((t) => t.id === taskId);
+    const task = this.findTask(taskId);
     if (task) {
       let deadlineValue = document.getElementById("datetime-custom").value;
 
@@ -241,7 +219,7 @@ class Controller {
   }
 
   updateTaskDetails(taskId, details) {
-    const task = model.list.find((t) => t.id === taskId);
+    const task = this.findTask(taskId);
     if (task) {
       task.details = details;
       localStorage.setItem("todos", JSON.stringify(model.list));
@@ -249,7 +227,7 @@ class Controller {
   }
 
   scheduleNotification(taskId, deadline) {
-    const task = model.list.find((t) => t.id === taskId);
+    const task = this.findTask(taskId);
     if (!task || !deadline) return;
     // Clear any existing timeout for this task
     this.removeNotification(taskId);
@@ -286,7 +264,7 @@ class Controller {
   }
 
   sendNotification(taskId) {
-    const task = model.list.find((t) => t.id === taskId);
+    const task = this.findTask(taskId);
     if (!task) return;
 
     const browserName = this.browserDetection();
@@ -441,6 +419,10 @@ class Controller {
     return (window.location.href = "#/todos/");
   }
 
+  findTask(taskId) {
+    return model.list.find((t) => t.id === taskId);
+  }
+
   browserDetection() {
     const browser = Bowser.getParser(window.navigator.userAgent);
     let data = browser.getBrowser();
@@ -461,7 +443,6 @@ class Controller {
 
   async changeCalendarTheme(theme) {
     const themeMap = {
-      // dark: () => import("flatpickr/dist/themes/dark.css"),
       material_blue: () => import("flatpickr/dist/themes/material_blue.css"),
       material_green: () => import("flatpickr/dist/themes/material_green.css"),
       material_red: () => import("flatpickr/dist/themes/material_red.css"),
@@ -475,7 +456,7 @@ class Controller {
     if (existingThemeLink) {
       existingThemeLink.remove();
     }
-
+    // Remove all flatpicker style tags with theme colors
     if (theme == "Default") {
       const existingStyleTags = document.querySelectorAll(
         'style[data-vite-dev-id*="/flatpickr/dist/themes"]'
