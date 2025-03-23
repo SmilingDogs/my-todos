@@ -106,22 +106,32 @@ class Controller {
     //Todo list item events
     todoList.addEventListener("touchend", (e) => {
       const target = e.target;
+      if (!target.matches("ion-icon")) return;
       const item = target.closest(".item");
       if (!item) return;
 
       const taskText = item.querySelector(".item-text").textContent;
       const task = model.list.find((t) => t.text === taskText);
 
-      if (target.classList.contains("complete-btn")) {
-        this.completeItem(task);
-      } else if (target.classList.contains("delete-btn")) {
-        this.deleteItem(task);
-      } else if (target.classList.contains("priority-btn")) {
-        this.prioritizeItem(task);
-      } else if (target.classList.contains("edit-btn")) {
-        this.editItem(task, e);
-      } else if (target.classList.contains("details-btn")) {
-        this.showTaskDetails(task.id);
+      let targetName = target.getAttribute("name");
+
+      switch (targetName) {
+        case "checkmark-outline":
+          this.completeItem(task);
+          break;
+        case "trash-outline":
+          this.deleteItem(task);
+          break;
+        case "star-outline":
+        case "star":
+          this.prioritizeItem(task);
+          break;
+        case "create-outline":
+          this.editItem(task, e);
+          break;
+        case "alarm-outline":
+          this.showTaskDetails(task.id);
+          break;
       }
     });
   }
