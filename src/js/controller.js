@@ -41,12 +41,10 @@ function checkNotificationSupport() {
 
 async function registerServiceWorker() {
   try {
-    const registration = await navigator.serviceWorker.register(
-      "/my-todos/sw.js",
-      {
-        scope: "/my-todos/",
-      }
-    );
+    // Use relative path without leading slash
+    const registration = await navigator.serviceWorker.register("sw.js", {
+      scope: "/my-todos/",
+    });
     console.log("Service Worker registered");
     return registration;
   } catch (error) {
