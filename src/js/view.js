@@ -8,6 +8,9 @@ class View {
   createIcon(name) {
     const icon = document.createElement("ion-icon");
     icon.setAttribute("name", name);
+    icon.setAttribute("tabindex", "-1"); // Prevent focus
+    icon.setAttribute("role", "button"); // Semantic role
+    icon.setAttribute("aria-label", name.replace("-outline", "")); // Accessibility
     return icon;
   }
 

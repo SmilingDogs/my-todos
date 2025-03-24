@@ -34,8 +34,8 @@ h1 {
 }
 
 #todo {
-  margin: 3% 7% 0 40%;
-  padding: 0px 30px;
+  margin: 8% 5% 0 35%; /* Adjusted margins to lower position and increase width */
+  padding: 0px 20px; /* Reduced padding */
   background: white;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -48,8 +48,8 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
-  padding-top: 10px;
+  gap: 15px; /* Increased gap slightly */
+  padding: 15px 0; /* Adjusted padding */
 }
 
 .add-container,
@@ -69,7 +69,7 @@ input {
   border: none;
   background: #f6f4f4;
   border-radius: 10px;
-  font-size: 1.2em;
+  font-size: 1.4em; /* Increased from 1.2em */
   color: var(--color);
   padding: 20px 0px 20px 60px;
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -140,6 +140,9 @@ input#task-deadline {
 ion-icon {
   font-size: 2rem;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent; /* Prevent tap highlight on mobile */
+  user-select: none; /* Prevent text selection */
+  touch-action: manipulation; /* Optimize for touch */
 }
 
 .edit-input {
@@ -234,6 +237,8 @@ input#search-item:focus {
 
 .calendar-icon {
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   left: 10px;
   font-size: 1.5rem;
   color: var(--color);
@@ -403,9 +408,10 @@ dropdown input:checked ~ ul {
   }
 
   #todo {
+    margin: 10% auto; /* Adjusted for mobile */
+    width: 95%; /* Wider on mobile */
     max-width: 90%;
     padding: 0px 30px;
-    margin: 5% auto;
     font-size: 1.6em;
   }
 
@@ -434,7 +440,7 @@ dropdown input:checked ~ ul {
     box-sizing: border-box;
     height: 50px;
     padding: 10px 40px 10px 45px;
-    font-size: 16px;
+    font-size: 18px; /* Specific pixel size for better mobile readability */
     width: 100%;
     max-width: 100%;
     min-width: 100%;

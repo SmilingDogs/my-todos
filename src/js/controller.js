@@ -217,6 +217,34 @@ class Controller {
           }
         }, 10);
       });
+
+      // Handle search on mobile
+      searchInput.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          this.processSearch();
+        }
+      });
+
+      // Add submit event for mobile search
+      searchInput.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.processSearch();
+      });
+
+      // Handle mobile keyboard "go" or "done" button for search
+      searchInput.addEventListener("blur", (e) => {
+        if (searchInput.value.trim()) {
+          this.processSearch();
+        }
+      });
+
+      searchInput.addEventListener("input", (e) => {
+        if (e.inputType === "insertText" && e.data === "\n") {
+          e.preventDefault();
+          this.processSearch();
+        }
+      });
     } else {
       taskInput.addEventListener("keydown", (e) => this.addTask(e));
       taskInput.addEventListener("input", (e) => this.handleMobileInput(e));
@@ -422,6 +450,13 @@ class Controller {
     this.sortItems();
     inputField.value = "";
     this.updateView();
+  }
+
+  processSearch() {
+    const searchValue = document.getElementById("search-item").value.trim();
+    if (searchValue) {
+      this.searchItem(searchValue);
+    }
   }
 
   searchTask(e) {
