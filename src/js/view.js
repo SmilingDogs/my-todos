@@ -61,21 +61,38 @@ class View {
 
         check.addEventListener(eventType, (e) => {
           e.preventDefault();
-          controller.completeItem(what[i]);
+          e.stopPropagation(); // Stop event bubbling
+          // Force immediate visual feedback
+          const isCompleted = what[i].completed;
+          span.style.textDecoration = isCompleted ? "none" : "line-through";
+          span.style.color = isCompleted ? "inherit" : "#bbb";
+          check.style.color = isCompleted ? "inherit" : "#bbb";
+          // Process after visual update
+          setTimeout(() => controller.completeItem(what[i]), 10);
         });
 
         trash.addEventListener(eventType, (e) => {
           e.preventDefault();
+          e.stopPropagation();
           controller.deleteItem(what[i]);
         });
 
         star.addEventListener(eventType, (e) => {
           e.preventDefault();
-          controller.prioritizeItem(what[i]);
+          e.stopPropagation();
+          // Force immediate icon update
+          star.setAttribute(
+            "name",
+            star.getAttribute("name") === "star-outline"
+              ? "star"
+              : "star-outline"
+          );
+          setTimeout(() => controller.prioritizeItem(what[i]), 10);
         });
 
         edit.addEventListener(eventType, (e) => {
           e.preventDefault();
+          e.stopPropagation();
           controller.editItem(what[i], e);
         });
       }

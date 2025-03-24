@@ -179,31 +179,43 @@ class Controller {
         if (!target.matches("ion-icon")) return;
 
         e.preventDefault();
+        e.stopPropagation(); // Prevent event bubbling
+
         const item = target.closest(".item");
         if (!item) return;
 
-        const taskId = item.dataset.id;
-        const task = this.findTask(taskId);
-        if (!task) return;
+        // Add a small delay to ensure the UI updates properly on mobile
+        setTimeout(() => {
+          const taskId = item.dataset.id;
+          const task = this.findTask(taskId);
+          if (!task) return;
 
-        switch (target.getAttribute("name")) {
-          case "checkmark-outline":
-            this.completeItem(task);
-            break;
-          case "trash-outline":
-            this.deleteItem(task);
-            break;
-          case "star-outline":
-          case "star":
-            this.prioritizeItem(task);
-            break;
-          case "create-outline":
-            this.editItem(task, e);
-            break;
-          case "alarm-outline":
-            this.showTaskDetails(task.id);
-            break;
-        }
+          switch (target.getAttribute("name")) {
+            case "checkmark-outline":
+              this.completeItem(task);
+              break;
+            case "trash-outline":
+              this.deleteItem(task);
+              break;
+            case "star-outline":
+            case "star":
+              // Force icon update for star
+              target.setAttribute(
+                "name",
+                target.getAttribute("name") === "star-outline"
+                  ? "star"
+                  : "star-outline"
+              );
+              this.prioritizeItem(task);
+              break;
+            case "create-outline":
+              this.editItem(task, e);
+              break;
+            case "alarm-outline":
+              this.showTaskDetails(task.id);
+              break;
+          }
+        }, 10);
       });
     } else {
       taskInput.addEventListener("keydown", (e) => this.addTask(e));
