@@ -34,7 +34,7 @@ h1 {
 }
 
 #todo {
-  margin: 12% 5% 0 35%; /* Increased top margin from 8% to 12% */
+  margin: 3% 7% 0 40%; /* Revert back to original desktop margins */
   padding: 0px 15px; /* Further reduced padding from 20px */
   background: white;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -202,7 +202,7 @@ input#search-item:focus {
 }
 
 #popup.active {
-  bottom: 20px; /* Show the popup with a smaller distance to the bottom */
+  bottom: 20px;
   opacity: 1;
 }
 
@@ -412,10 +412,10 @@ dropdown input:checked ~ ul {
   }
 
   #todo {
-    margin: 10% auto; /* Adjusted for mobile */
-    width: 95%; /* Wider on mobile */
-    max-width: 90%;
-    padding: 0px 30px;
+    margin: 15% auto;
+    width: 98%;
+    max-width: 95%;
+    padding: 0px 15px;
     font-size: 1.6em;
   }
 
