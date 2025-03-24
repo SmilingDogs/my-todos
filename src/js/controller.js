@@ -302,14 +302,8 @@ class Controller {
   async sendNotification(taskId) {
     const task = this.findTask(taskId);
     if (!task) return;
-    const browserName = this.browserDetection();
 
-    if (browserName === "Chrome" || this.isMobile) {
-      this.firePopup(`Deadline is now: ${task.text}`, 6000);
-    } else if (
-      this.notificationSupported &&
-      Notification.permission === "granted"
-    ) {
+    if (this.notificationSupported && Notification.permission === "granted") {
       try {
         const registration = await navigator.serviceWorker.ready;
         await registration.showNotification("Task Deadline", {
