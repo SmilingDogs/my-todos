@@ -263,7 +263,7 @@ input#search-item:focus {
 }
 
 #task-details-text {
-  font-size: 0.9em;
+  font-size: 1.2em; /* Increased from 0.9em */
   padding: 5px 0.9em;
   outline-color: var(--color);
   max-width: 100%;
