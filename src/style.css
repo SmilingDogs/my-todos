@@ -34,8 +34,8 @@ h1 {
 }
 
 #todo {
-  margin: 8% 5% 0 35%; /* Adjusted margins to lower position and increase width */
-  padding: 0px 20px; /* Reduced padding */
+  margin: 12% 5% 0 35%; /* Increased top margin from 8% to 12% */
+  padding: 0px 15px; /* Further reduced padding from 20px */
   background: white;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -69,9 +69,9 @@ input {
   border: none;
   background: #f6f4f4;
   border-radius: 10px;
-  font-size: 1.4em; /* Increased from 1.2em */
+  font-size: 1.6em; /* Increased from 1.4em */
   color: var(--color);
-  padding: 20px 0px 20px 60px;
+  padding: 25px 0px 25px 65px; /* Increased padding */
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
   -moz-box-sizing: border-box; /* Firefox, other Gecko */
   box-sizing: border-box; /* Opera/IE 8+ */
@@ -156,15 +156,19 @@ ion-icon {
   border: 2px solid var(--color);
 }
 ::-webkit-input-placeholder {
+  font-size: 1.1em;
   color: #bbb;
 }
 ::-moz-placeholder {
+  font-size: 1.1em;
   color: #bbb;
 }
 :-ms-input-placeholder {
+  font-size: 1.1em;
   color: #bbb;
 }
 :-moz-placeholder {
+  font-size: 1.1em;
   color: #eee;
 }
 
@@ -439,8 +443,8 @@ dropdown input:checked ~ ul {
   input {
     box-sizing: border-box;
     height: 50px;
-    padding: 10px 40px 10px 45px;
-    font-size: 18px; /* Specific pixel size for better mobile readability */
+    padding: 15px 45px 15px 50px; /* Adjusted padding */
+    font-size: 20px; /* Increased from 18px */
     width: 100%;
     max-width: 100%;
     min-width: 100%;
@@ -471,7 +475,7 @@ dropdown input:checked ~ ul {
     right: 0;
   }
   ::-webkit-input-placeholder {
-    font-size: 0.9em;
+    font-size: 1em;
   }
   ::-moz-placeholder {
     font-size: 0.9em;
