@@ -402,23 +402,38 @@ dropdown input:checked ~ ul {
   }
 
   .input-container {
-    padding-top: 2.5%;
+    padding: 15px 0;
     position: relative;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
+    align-items: stretch;
+    gap: 15px;
   }
 
   .add-container,
   .search-container {
     width: 100%;
+    position: relative;
   }
   .add-icon,
   .search-icon {
-    top: 20%;
-    left: 84%;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
     z-index: 2;
-    margin-right: 50px;
+  }
+
+  input {
+    box-sizing: border-box;
+    height: 50px;
+    padding: 10px 40px 10px 45px;
+    font-size: 16px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 10px;
   }
 
   .item {
@@ -427,16 +442,6 @@ dropdown input:checked ~ ul {
 
   .item-text {
     font-weight: 400;
-  }
-
-  input {
-    box-sizing: border-box;
-    height: 30px;
-    padding-left: 35px; /* Increased padding to provide more space */
-    font-size: 0.9em;
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
   }
 
   ion-icon {

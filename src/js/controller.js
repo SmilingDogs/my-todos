@@ -123,15 +123,21 @@ class Controller {
     const eventType = this.isMobile ? "touchend" : "click";
 
     if (this.isMobile) {
-      taskInput.addEventListener("touchend", (e) => {
+      // Add input event handler for the add-item field
+      taskInput.addEventListener("input", (e) => this.handleMobileInput(e));
+
+      // Add touchend handler for the add icon
+      document.querySelector(".add-icon").addEventListener("touchend", (e) => {
         e.preventDefault();
         this.processTask();
       });
 
-      searchInput.addEventListener("touchend", (e) => {
-        e.preventDefault();
-        const value = searchInput.value.trim();
-        if (value) this.searchItem(value);
+      searchInput.addEventListener("input", (e) => {
+        const value = e.target.value.trim();
+        if (value && e.inputType === "insertText" && e.data === "\n") {
+          e.preventDefault();
+          this.searchItem(value);
+        }
       });
 
       todoList.addEventListener("touchend", (e) => {
@@ -332,6 +338,7 @@ class Controller {
   }
 
   handleMobileInput(e) {
+    // Process task when Enter is pressed on mobile keyboard
     if (e.inputType === "insertText" && e.data === "\n") {
       e.preventDefault();
       this.processTask();
