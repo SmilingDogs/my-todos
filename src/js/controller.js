@@ -138,6 +138,27 @@ class Controller {
 
     // Mobile-specific handlers
     if (this.isMobile) {
+      // Handle form submission on mobile
+      taskInput.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          this.processTask();
+        }
+      });
+
+      // Add submit event for mobile keyboards
+      taskInput.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.processTask();
+      });
+
+      // Handle mobile keyboard "go" or "done" button
+      taskInput.addEventListener("blur", (e) => {
+        if (taskInput.value.trim()) {
+          this.processTask();
+        }
+      });
+
       taskInput.addEventListener("input", (e) => {
         if (e.inputType === "insertText" && e.data === "\n") {
           e.preventDefault();
