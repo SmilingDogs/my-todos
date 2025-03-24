@@ -122,14 +122,27 @@ class Controller {
     const todoList = document.getElementById("list");
     const eventType = this.isMobile ? "touchend" : "click";
 
-    if (this.isMobile) {
-      // Add input event handler for the add-item field
-      taskInput.addEventListener("input", (e) => this.handleMobileInput(e));
-
-      // Add touchend handler for the add icon
-      document.querySelector(".add-icon").addEventListener("touchend", (e) => {
+    // Task input handlers for both mobile and desktop
+    taskInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.code === "NumpadEnter") {
         e.preventDefault();
         this.processTask();
+      }
+    });
+
+    // Add click handler for the add icon
+    document.querySelector(".add-icon").addEventListener(eventType, (e) => {
+      e.preventDefault();
+      this.processTask();
+    });
+
+    // Mobile-specific handlers
+    if (this.isMobile) {
+      taskInput.addEventListener("input", (e) => {
+        if (e.inputType === "insertText" && e.data === "\n") {
+          e.preventDefault();
+          this.processTask();
+        }
       });
 
       searchInput.addEventListener("input", (e) => {
@@ -359,15 +372,23 @@ class Controller {
   processTask() {
     const inputField = document.getElementById("add-item");
     const inputValue = inputField.value.trim();
+
     if (!inputValue) return;
-    //prettier-ignore
-    if (model.list.some((item) => item.text.toLowerCase() === inputValue.toLowerCase())) {
+
+    if (
+      model.list.some(
+        (item) => item.text.toLowerCase() === inputValue.toLowerCase()
+      )
+    ) {
       this.firePopup("Task already exists", 5000);
       return;
     }
 
-    this.addItem(new Task(inputValue));
+    const task = new Task(inputValue);
+    model.list.push(task);
+    this.sortItems();
     inputField.value = "";
+    this.updateView();
   }
 
   searchTask(e) {
