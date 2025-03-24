@@ -13,24 +13,20 @@ const title = document.querySelector("h1");
 title.textContent = `${day} ${month} ${year}`;
 
 function checkNotificationSupport() {
-  if (!("Notification" in window)) {
+  if (!("Notification" in window) || !("serviceWorker" in navigator)) {
     console.log("This browser does not support desktop notifications.");
     return false;
   }
 
   if (Notification.permission === "granted") {
     console.log("Notification permission granted.");
-    new Notification("Test Notification", {
-      body: "This is a test notification.",
-    });
+    registerServiceWorker();
     return true;
   } else if (Notification.permission !== "denied") {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
         console.log("Notification permission granted after request.");
-        new Notification("Test Notification", {
-          body: "This is a test notification.",
-        });
+        registerServiceWorker();
         return true;
       } else {
         console.log("Notification permission denied.");
@@ -40,6 +36,17 @@ function checkNotificationSupport() {
   } else {
     console.log("Notification permission denied.");
     return false;
+  }
+}
+
+async function registerServiceWorker() {
+  try {
+    const registration = await navigator.serviceWorker.register("./js/sw.js");
+    console.log("Service Worker registered");
+    return registration;
+  } catch (error) {
+    console.error("Service Worker registration failed:", error);
+    return null;
   }
 }
 
@@ -292,7 +299,7 @@ class Controller {
     }
   }
 
-  sendNotification(taskId) {
+  async sendNotification(taskId) {
     const task = this.findTask(taskId);
     if (!task) return;
     const browserName = this.browserDetection();
@@ -303,10 +310,17 @@ class Controller {
       this.notificationSupported &&
       Notification.permission === "granted"
     ) {
-      new Notification("Task Deadline", {
-        body: `Deadline is now: ${task.text}`,
-        icon: "/favicon.ico",
-      });
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification("Task Deadline", {
+          body: `Deadline is now: ${task.text}`,
+          icon: "/favicon.ico",
+          requireInteraction: true,
+        });
+      } catch (error) {
+        console.error("Error showing notification:", error);
+        this.firePopup(`Deadline is now: ${task.text}`, 6000);
+      }
     } else {
       this.firePopup(`Deadline is now: ${task.text}`, 6000);
     }
