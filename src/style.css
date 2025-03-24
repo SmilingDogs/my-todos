@@ -14,7 +14,7 @@ body {
   height: 100dvh;
   width: 100dvw;
   overflow: hidden;
-  background: url("../src/assets/todo-background2.jpg") no-repeat center center
+  background: url("../src/assets/todo-background.avif") no-repeat center center
     fixed;
   background-size: cover;
   color: var(--color);
