@@ -216,19 +216,19 @@ input#search-item:focus {
   padding: 30px;
   background: white;
   font-size: 1.3em;
-  justify-content: flex-start;
-  align-items: flex-start;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 25vw;
+  display: flex;
+  flex-direction: column;
   gap: 15px;
   max-height: 70vh;
-  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .date-container {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
 }
 
@@ -377,6 +377,14 @@ dropdown input:checked ~ ul {
   background-color: #f6f4f4;
   color: var(--color);
   cursor: pointer;
+}
+
+#datetime-custom {
+  width: 100%;
+  padding: 10px 10px 10px 40px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+  font-size: 0.9em;
 }
 
 /* Responsive Design */
