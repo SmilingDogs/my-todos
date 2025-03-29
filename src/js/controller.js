@@ -394,8 +394,18 @@ class Controller {
         if (browserName === "Chrome") {
           // Use custom popup for Chrome
           this.firePopup(`Deadline is now: ${task.text}`, 6000);
+        } else if (
+          (browserName === "Firefox" || browserName === "Edge") &&
+          !this.isMobile
+        ) {
+          // Use native notifications for Firefox and Edge on PC
+          new Notification("Task Deadline", {
+            body: `Deadline is now: ${task.text}`,
+            icon: "/favicon.ico",
+            requireInteraction: true,
+          });
         } else {
-          // Use native notifications for other PC browsers
+          // Fallback to service worker notifications for other browsers
           const registration = await navigator.serviceWorker.ready;
           await registration.showNotification("Task Deadline", {
             body: `Deadline is now: ${task.text}`,
