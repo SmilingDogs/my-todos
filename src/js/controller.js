@@ -388,12 +388,21 @@ class Controller {
 
     if (this.notificationSupported && Notification.permission === "granted") {
       try {
-        const registration = await navigator.serviceWorker.ready;
-        await registration.showNotification("Task Deadline", {
-          body: `Deadline is now: ${task.text}`,
-          icon: "/favicon.ico",
-          requireInteraction: true,
-        });
+        const browser = Bowser.getParser(window.navigator.userAgent);
+        const browserName = browser.getBrowserName();
+
+        if (browserName === "Chrome") {
+          // Use custom popup for Chrome
+          this.firePopup(`Deadline is now: ${task.text}`, 6000);
+        } else {
+          // Use native notifications for other PC browsers
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification("Task Deadline", {
+            body: `Deadline is now: ${task.text}`,
+            icon: "/favicon.ico",
+            requireInteraction: true,
+          });
+        }
       } catch (error) {
         console.error("Error showing notification:", error);
         this.firePopup(`Deadline is now: ${task.text}`, 6000);
