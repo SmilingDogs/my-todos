@@ -347,11 +347,13 @@ class Controller {
         delete task.deadline;
         this.removeNotification(taskId);
       } else {
-        task.deadline = `${deadlineValue}`;
+        task.deadline = deadlineValue;
         this.scheduleNotification(taskId, task.deadline);
       }
 
-      localStorage.setItem("todos", JSON.stringify(model.list));
+      this.save();
+      this.view.render(model.list);
+      this.firePopup("Deadline updated", 5000);
     }
   }
 
