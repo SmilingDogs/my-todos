@@ -286,41 +286,50 @@ class Controller {
     const task = this.findTask(taskId);
     if (!task) return;
 
-    document.getElementById("task-title").textContent = task.text;
+    // Reset the input value first
     const deadlineInput = document.getElementById("datetime-custom");
+    deadlineInput.value = "";
+
+    document.getElementById("task-title").textContent = task.text;
+
+    // Remove previous event listener
+    if (this.handleDeadlineChange) {
+      deadlineInput.removeEventListener("change", this.handleDeadlineChange);
+    }
 
     if (this.isMobile) {
       deadlineInput.type = "datetime-local";
       deadlineInput.min = new Date().toISOString().slice(0, 16);
-
       if (task.deadline) {
         deadlineInput.value = task.deadline;
       }
     } else {
+      if (deadlineInput._flatpickr) {
+        deadlineInput._flatpickr.destroy();
+      }
       this.setupFlatpickr(deadlineInput, task, taskId);
     }
 
-    // Setup deadline change handler
-    if (this.handleDeadlineChange) {
-      deadlineInput.removeEventListener("change", this.handleDeadlineChange);
-    }
-    this.handleDeadlineChange = () => this.updateDeadline(taskId);
-    deadlineInput.addEventListener("change", this.handleDeadlineChange);
+    // Create new handler specifically for this task
+    this.handleDeadlineChange = () => {
+      const currentTask = this.findTask(taskId);
+      if (!currentTask) return;
 
-    // Setup details textarea
-    const detailsTextarea = document.getElementById("task-details-text");
-    detailsTextarea.value = task.details || "";
-
-    if (this.handleDetailsKeydown) {
-      detailsTextarea.removeEventListener("keydown", this.handleDetailsKeydown);
-    }
-    this.handleDetailsKeydown = (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        this.updateTaskDetails(taskId, detailsTextarea.value);
+      const newDeadline = deadlineInput.value;
+      if (!newDeadline) {
+        delete currentTask.deadline;
+        this.removeNotification(taskId);
+      } else {
+        currentTask.deadline = newDeadline;
+        this.scheduleNotification(taskId, newDeadline);
       }
+
+      this.save();
+      this.view.render(model.list);
+      this.firePopup("Deadline updated", 5000);
     };
-    detailsTextarea.addEventListener("keydown", this.handleDetailsKeydown);
+
+    deadlineInput.addEventListener("change", this.handleDeadlineChange);
   }
 
   setupFlatpickr(input, task, taskId) {
