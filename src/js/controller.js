@@ -1,8 +1,8 @@
-import { Task, model } from "./model.js";
-import View from "./view.js";
-import Router from "./router.js";
 import Bowser from "bowser";
 import flatpickr from "flatpickr";
+import { Task, model } from "./model.js";
+import Router from "./router.js";
+import View from "./view.js";
 
 //prettier-ignore
 let day = new Date().getDate() < 10 ? "0" + new Date().getDate() : new Date().getDate();
@@ -391,34 +391,32 @@ class Controller {
         const browser = Bowser.getParser(window.navigator.userAgent);
         const browserName = browser.getBrowserName();
 
-        if (browserName === "Chrome") {
-          // Use custom popup for Chrome
-          this.firePopup(`Deadline is now: ${task.text}`, 6000);
-        } else if (
-          (browserName === "Firefox" || browserName === "Edge") &&
-          !this.isMobile
-        ) {
-          // Use native notifications for Firefox and Edge on PC
-          new Notification("Task Deadline", {
-            body: `Deadline is now: ${task.text}`,
-            icon: "/favicon.ico",
-            requireInteraction: true,
-          });
-        } else {
-          // Fallback to service worker notifications for other browsers
+        // Check mobile first
+        if (this.isMobile) {
+          // Handle mobile notifications using service worker
           const registration = await navigator.serviceWorker.ready;
           await registration.showNotification("Task Deadline", {
             body: `Deadline is now: ${task.text}`,
             icon: "/favicon.ico",
-            requireInteraction: true,
           });
+        } else {
+          // Handle desktop notifications based on browser
+          if (browserName === "Chrome") {
+            // Use custom popup for Chrome desktop
+            this.firePopup(`Deadline is now: ${task.text}`, 6000);
+          } else if (browserName === "Firefox" || browserName === "Edge") {
+            // Use native notifications for Firefox and Edge on desktop
+            new Notification("Task Deadline", {
+              body: `Deadline is now: ${task.text}`,
+              icon: "/favicon.ico",
+              requireInteraction: true,
+            });
+          }
         }
       } catch (error) {
         console.error("Error showing notification:", error);
         this.firePopup(`Deadline is now: ${task.text}`, 6000);
       }
-    } else {
-      this.firePopup(`Deadline is now: ${task.text}`, 6000);
     }
   }
 
