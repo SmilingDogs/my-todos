@@ -326,7 +326,7 @@ class Controller {
 
       this.save();
       this.view.render(model.list);
-      this.firePopup("Deadline updated", 5000);
+      this.firePopup("Deadline updated", 3000);
     };
 
     deadlineInput.addEventListener("change", this.handleDeadlineChange);
