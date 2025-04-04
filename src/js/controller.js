@@ -388,13 +388,31 @@ class Controller {
 
     if (this.notificationSupported && Notification.permission === "granted") {
       try {
-        // Use Service Worker notifications for all platforms
-        const registration = await navigator.serviceWorker.ready;
-        await registration.showNotification("Task Deadline", {
-          body: `Deadline is now: ${task.text}`,
-          icon: "/favicon.ico",
-          requireInteraction: true,
-        });
+        const browser = Bowser.getParser(window.navigator.userAgent);
+        const browserName = browser.getBrowserName();
+
+        // Check mobile first
+        if (this.isMobile) {
+          // Handle mobile notifications using service worker
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification("Task Deadline", {
+            body: `Deadline is now: ${task.text}`,
+            icon: "/favicon.ico",
+          });
+        } else {
+          // Handle desktop notifications based on browser
+          if (browserName === "Chrome") {
+            // Use custom popup for Chrome desktop
+            this.firePopup(`Deadline is now: ${task.text}`, 6000);
+          } else if (browserName === "Firefox" || browserName === "Edge") {
+            // Use native notifications for Firefox and Edge on desktop
+            new Notification("Task Deadline", {
+              body: `Deadline is now: ${task.text}`,
+              icon: "/favicon.ico",
+              requireInteraction: true,
+            });
+          }
+        }
       } catch (error) {
         console.error("Error showing notification:", error);
         this.firePopup(`Deadline is now: ${task.text}`, 6000);
