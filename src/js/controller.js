@@ -369,7 +369,8 @@ class Controller {
     const task = this.findTask(taskId);
     if (task) {
       task.details = details;
-      localStorage.setItem("todos", JSON.stringify(model.list));
+      this.save();
+      this.view.render(model.list);
     }
   }
 
