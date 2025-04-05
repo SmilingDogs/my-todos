@@ -404,7 +404,7 @@ class Controller {
         await registration.showNotification("Task Deadline", {
           body: `Deadline is now: ${task.text}`,
           icon: "/favicon.ico",
-          requireInteraction: true,
+          requireInteraction: false,
         });
       } catch (error) {
         console.error("Error showing notification:", error);
