@@ -362,7 +362,6 @@ class Controller {
 
       this.save();
       this.view.render(model.list);
-      this.firePopup("Deadline updated", 5000);
     }
   }
 
